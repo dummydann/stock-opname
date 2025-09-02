@@ -3,6 +3,8 @@ import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Text,
@@ -22,9 +24,10 @@ export default function Login() {
 
   const handleLogin = async () => {
     const result = await login(email, password);
+    console.log(result);
+    
+    if(!result.success) Alert.alert('Error', result.error)
   };
-  console.log(token);
-  console.log(user);
 
   return (
     <KeyboardAvoidingView

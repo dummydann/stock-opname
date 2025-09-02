@@ -136,6 +136,11 @@ const styles = StyleSheet.create({
   buttonIcon: {
     marginRight: 8,
   },
+  picker: {
+    flex: 1,
+    height: 40,
+    backgroundColor: COLORS.inputBackground,
+  },
 });
 
 export default styles;
