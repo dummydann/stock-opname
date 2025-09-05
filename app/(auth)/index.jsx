@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { useState } from "react";
 import {
@@ -36,11 +35,12 @@ export default function Login() {
     >
       <View style={styles.container}>
         <View style={styles.topIllustration}>
-          <Image
+          <Text style={[styles.title, {marginBottom: 50}]}>Stock Opname</Text>
+          {/* <Image
             source={require("../../assets/images/i.png")}
             style={styles.illustrationImage}
             resizeMode="contain"
-          />
+          /> */}
         </View>
         <View style={styles.card}>
           <View style={styles.formContainer}>

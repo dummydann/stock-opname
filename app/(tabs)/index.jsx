@@ -1,26 +1,14 @@
-import { useEffect, useState } from "react";
-import { FlatList, Image, Text, View } from "react-native";
-import ImageMaterials from "../../assets/images/materials.jpg";
-import ImageWarehouses from "../../assets/images/warehouses.jpg";
+import { useState } from "react";
+import { FlatList, Text, View } from "react-native";
+import { types } from '../../assets/json/dummy';
 import styles from "../../assets/styles/home.styles";
+import CategoryCard from '../../components/CategoryCard';
 
 export default function Home() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const types = [
-    {
-      id: 1,
-      name: "Warehouses Management",
-      picture: ImageWarehouses,
-    },
-    {
-      id: 2,
-      name: "Materials Management",
-      picture: ImageMaterials,
-    },
-  ];
 
   const fetchBooks = async (pageNum = 1, refresh = false) => {
     try {
@@ -60,32 +48,14 @@ export default function Home() {
       } else setLoading(false);
     }
   };
-  useEffect(() => {
-    fetchBooks();
-  }, []);
-  const handleLoadMore = async () => {};
-  const renderItem = ({ item }) => (
-    <View style={styles.bookCard}>
-      <View style={styles.bookImageContainer}>
-        <Image
-          source={item.picture}
-          style={styles.bookImage}
-          contentFit="cover"
-        />
-      </View>
-
-      <View style={styles.bookDetails}>
-        <Text style={styles.bookTitle}>{item.name}</Text>
-        <Text style={styles.caption}>{item.name}</Text>
-      </View>
-    </View>
-  );
+  // useEffect(() => {
+  //   fetchBooks();
+  // }, []);
   return (
     <View style={styles.container}>
       <FlatList
         data={types}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        renderItem={({item}) => <CategoryCard item={item}/>}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
