@@ -3,8 +3,23 @@ import ImageWarehouses from "../images/warehouses.jpg";
 
 // Dummy untuk types
 const types = [
-  { id: 1, name: "Warehouses Management", picture: ImageWarehouses, },
-  { id: 2, name: "Materials Management", picture: ImageMaterials, },
+  { id: 1, name: "Warehouses Management", picture: ImageWarehouses },
+  { id: 2, name: "Materials Management", picture: ImageMaterials },
+];
+
+const tasks = [
+  {
+    id: "t1",
+    title: "SO - Warehouse Cabang Jakarta",
+    binCode: "BIN-001",
+    status: "not_started",
+  },
+  {
+    id: "t2",
+    title: "SO - Warehouse Cabang Bandung",
+    binCode: "BIN-002",
+    status: "not_started",
+  },
 ];
 
 // Dummy untuk users
@@ -23,5 +38,4 @@ const products = [
   { id: 3, name: "Scanner", price: 2000000 },
 ];
 
-export { products, rounds, types };
-
+export { products, rounds, tasks, types };

@@ -1,38 +1,76 @@
-import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
-import { ActivityIndicator, Alert, Button, KeyboardAvoidingView, Modal, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import styles from '../../assets/styles/create.styles';
-import COLORS from '../../constants/colors';
+import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Dropdown } from "react-native-element-dropdown";
+import styles from "../../assets/styles/create.styles";
+import COLORS from "../../constants/colors";
 
 export default function Create() {
-    const [storageBin, setStorageBin] = useState("");
-    const [storageUnit, setStorageUnit] = useState("");
-    const [material, setMaterial] = useState("");
-    const [title, setTitle] = useState("");
-    const [caption, setCaption] = useState("");
-    const [image, setImage] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [visible, setVisible] = useState(false);
+  const [storageBin, setStorageBin] = useState("");
+  const [storageUnit, setStorageUnit] = useState("");
+  const [material, setMaterial] = useState("");
+  const [title, setTitle] = useState("");
+  const [caption, setCaption] = useState("");
+  const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [value, setValue] = useState("");
+  const [isFocus, setIsFocus] = useState(false);
 
-  const bins = ["FL-1-001", "FL-1-002", "FL-1-003"];
+  const renderLabel = (props) => {
+    if (value || isFocus) {
+      return (
+        <Text style={[styles.label, isFocus && { color: "blue" }]}>
+          {props}
+        </Text>
+      );
+    }
+    return null;
+  };
 
-    const pickImage = async () => {
-        console.log('was pressed');
+  const bins = [
+    { value: "FL-1-001" },
+    { value: "FL-1-002" },
+    { value: "FL-1-003" },
+  ];
+  const data = [
+    { label: "Item 1", value: "1" },
+    { label: "Item 2", value: "2" },
+    { label: "Item 3", value: "3" },
+    { label: "Item 4", value: "4" },
+    { label: "Item 5", value: "5" },
+    { label: "Item 6", value: "6" },
+    { label: "Item 7", value: "7" },
+    { label: "Item 8", value: "8" },
+  ];
+  const handleSubmit = async () => {
+    console.log(title, caption);
+
+    if (!title || !caption) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
     }
-    const handleSubmit = async () => {
-        console.log(title, caption);
-        
-         if (!title || !caption) {
-            Alert.alert("Error", "Please fill in all fields");
-            return;
-        }
-    }
+  };
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <ScrollView contentContainerStyle={styles.container} style={styles.scrollViewStyle}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        style={styles.scrollViewStyle}
+      >
         <View style={styles.card}>
           {/* HEADER */}
           <View style={styles.header}>
@@ -42,36 +80,128 @@ export default function Create() {
 
           <View style={styles.form}>
             <View style={styles.formGroup}>
-                <Text style={styles.label}>Storage Bin</Text>
-                <Button
-                    title={storageBin || "Select Storage Bin"}
-                    onPress={() => setVisible(true)}
-                />
-
-                <Modal
-                    animationType="slide"
-                    transparent={true}
-                    visible={visible}
-                    onRequestClose={() => setVisible(false)}
-                >
-                    <View style={{ flex: 1, justifyContent: "flex-end" }}>
-                    <View style={{ backgroundColor: "white", padding: 20 }}>
-                        {bins.map((bin) => (
-                        <TouchableOpacity
-                            key={bin}
-                            onPress={() => {
-                            setStorageBin(bin);
-                            setVisible(false);
-                            }}
-                            style={{ padding: 15 }}
-                        >
-                            <Text>{bin}</Text>
-                        </TouchableOpacity>
-                        ))}
-                        <Button title="Cancel" onPress={() => setVisible(false)} />
-                    </View>
-                    </View>
-                </Modal>
+              {renderLabel("Storage Bin")}
+              <Dropdown
+                style={[style.dropdown, isFocus && { borderColor: "blue" }]}
+                placeholderStyle={style.placeholderStyle}
+                selectedTextStyle={style.selectedTextStyle}
+                inputSearchStyle={style.inputSearchStyle}
+                iconStyle={style.iconStyle}
+                data={bins}
+                maxHeight={300}
+                labelField="value"
+                valueField="value"
+                placeholder={!isFocus ? "Select Storage Bin" : "..."}
+                searchPlaceholder="Search..."
+                value={value}
+                onFocus={() => setIsFocus(true)}
+                onBlur={() => setIsFocus(false)}
+                onChange={(item) => {
+                  setValue(item.value);
+                  setIsFocus(false);
+                }}
+                renderLeftIcon={() => (
+                  <AntDesign
+                    style={style.icon}
+                    color={isFocus ? "blue" : "black"}
+                    name="database"
+                    size={20}
+                  />
+                )}
+              />
+            </View>
+            <View style={styles.formGroup}>
+              {renderLabel("Storage Unit Number")}
+              <Dropdown
+                style={[style.dropdown, isFocus && { borderColor: "blue" }]}
+                placeholderStyle={style.placeholderStyle}
+                selectedTextStyle={style.selectedTextStyle}
+                inputSearchStyle={style.inputSearchStyle}
+                iconStyle={style.iconStyle}
+                data={bins}
+                maxHeight={300}
+                labelField="value"
+                valueField="value"
+                placeholder={!isFocus ? "Select Storage Bin" : "..."}
+                searchPlaceholder="Search..."
+                value={value}
+                onFocus={() => setIsFocus(true)}
+                onBlur={() => setIsFocus(false)}
+                onChange={(item) => {
+                  setValue(item.value);
+                  setIsFocus(false);
+                }}
+                renderLeftIcon={() => (
+                  <AntDesign
+                    style={style.icon}
+                    color={isFocus ? "blue" : "black"}
+                    name="database"
+                    size={20}
+                  />
+                )}
+              />
+            </View>
+            <View style={styles.formGroup}>
+              {renderLabel("Material")}
+              <Dropdown
+                style={[style.dropdown, isFocus && { borderColor: "blue" }]}
+                placeholderStyle={style.placeholderStyle}
+                selectedTextStyle={style.selectedTextStyle}
+                inputSearchStyle={style.inputSearchStyle}
+                iconStyle={style.iconStyle}
+                data={bins}
+                maxHeight={300}
+                labelField="value"
+                valueField="value"
+                placeholder={!isFocus ? "Select Storage Bin" : "..."}
+                searchPlaceholder="Search..."
+                value={value}
+                onFocus={() => setIsFocus(true)}
+                onBlur={() => setIsFocus(false)}
+                onChange={(item) => {
+                  setValue(item.value);
+                  setIsFocus(false);
+                }}
+                renderLeftIcon={() => (
+                  <AntDesign
+                    style={style.icon}
+                    color={isFocus ? "blue" : "black"}
+                    name="database"
+                    size={20}
+                  />
+                )}
+              />
+            </View>
+            <View style={styles.formGroup}>
+              {renderLabel("Batch")}
+              <Dropdown
+                style={[style.dropdown, isFocus && { borderColor: "blue" }]}
+                placeholderStyle={style.placeholderStyle}
+                selectedTextStyle={style.selectedTextStyle}
+                inputSearchStyle={style.inputSearchStyle}
+                iconStyle={style.iconStyle}
+                data={bins}
+                maxHeight={300}
+                labelField="value"
+                valueField="value"
+                placeholder={!isFocus ? "Select Storage Bin" : "..."}
+                searchPlaceholder="Search..."
+                value={value}
+                onFocus={() => setIsFocus(true)}
+                onBlur={() => setIsFocus(false)}
+                onChange={(item) => {
+                  setValue(item.value);
+                  setIsFocus(false);
+                }}
+                renderLeftIcon={() => (
+                  <AntDesign
+                    style={style.icon}
+                    color={isFocus ? "blue" : "black"}
+                    name="database"
+                    size={20}
+                  />
+                )}
+              />
             </View>
 
             <View style={styles.formGroup}>
@@ -161,7 +291,11 @@ export default function Create() {
               />
             </View>
 
-            <TouchableOpacity style={[styles.button, {backgroundColor: 'green'}]} onPress={handleSubmit} disabled={loading}>
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: "green" }]}
+              onPress={handleSubmit}
+              disabled={loading}
+            >
               {loading ? (
                 <ActivityIndicator color={COLORS.white} />
               ) : (
@@ -180,5 +314,45 @@ export default function Create() {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
-  )
+  );
 }
+
+const style = StyleSheet.create({
+  container: {
+    backgroundColor: "white",
+    padding: 16,
+  },
+  dropdown: {
+    height: 50,
+    borderColor: "gray",
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  icon: {
+    marginRight: 5,
+  },
+  label: {
+    position: "absolute",
+    backgroundColor: "white",
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+});
