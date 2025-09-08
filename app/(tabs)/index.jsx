@@ -4,6 +4,8 @@ import { types } from '../../assets/json/dummy';
 import styles from "../../assets/styles/home.styles";
 import CategoryCard from '../../components/CategoryCard';
 
+export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export default function Home() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -4,7 +4,7 @@ import styles from "../assets/styles/home.styles";
 
 export default function CategoryCard({ item }) {
   return (
-    <Link href={`/category`} asChild>
+    <Link href={`/${item.route}`} asChild>
       <Pressable style={styles.bookCard}>
         <View style={styles.bookImageContainer}>
           <Image

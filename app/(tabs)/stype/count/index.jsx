@@ -1,24 +1,12 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
-import styles from "../../assets/styles/create.styles";
-import COLORS from "../../constants/colors";
-import { useKladStore } from "../../store/kladStore";
+import styles from "../../../../assets/styles/create.styles";
+import COLORS from "../../../../constants/colors";
+import { useKladStore } from "../../../../store/kladStore";
 
-export default function Create() {
+export default function Count() {
   const {code} = useLocalSearchParams();
   const { dataWm, fetchWm, fetchWmByStype, dataWmByStype } = useKladStore();
   const [storageBin, setStorageBin] = useState('');
@@ -38,7 +26,7 @@ export default function Create() {
   useEffect(()=>{
     fetchWmByStype(code)
   },[])
-  
+
   const datastorageBin   = [...new Set((dataWmByStype ?? []).map(item => item.storage_bin))].map(v => ({ label: v, value: v }));
   const datastorageUnit  = [...new Set((dataWmByStype ?? []).map(item => item.storage_unit_number))].map(v => ({ label: v, value: v }));
   const datamaterial     = [...new Set((dataWmByStype ?? []).map(item => String(item.material.material_id)))].map(v => ({ label: v, value: v }));
@@ -54,13 +42,19 @@ export default function Create() {
   };
 
   const handleSubmit = async () => {
-    if (!storageBin || !storageUnit || !material || !batch || !qty || !notes) {
-      Alert.alert("Error", "Please fill in all fields");
-      return;
-    }else{
-      Alert.alert('success', "Material success count")
-    }
-  };
+      if (!storageBin || !storageUnit || !material || !batch || !qty || !notes) {
+        Alert.alert("Error", "Please fill in all fields");
+        return;
+      }else{
+        Alert.alert('success', "Material success count")
+        setStorageBin('')
+        setStorageUnit('')
+        setMaterial('')
+        setBatch('')
+        setQty('')
+        setNotes('')
+      }
+    };
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -162,12 +156,6 @@ export default function Create() {
             <View style={styles.formGroup}>
               <Text style={styles.label}>Quantity</Text>
               <View style={styles.inputContainer}>
-                <Ionicons
-                  name="book-outline"
-                  size={20}
-                  color={COLORS.textSecondary}
-                  style={styles.inputIcon}
-                />
                 <TextInput
                   style={styles.input}
                   placeholder="Input Quantity"

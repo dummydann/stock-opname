@@ -1,70 +1,71 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  Alert,
   FlatList,
-  Pressable,
   RefreshControl,
-  Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
+import { sleep } from "..";
 import styles from "../../../assets/styles/profile.styles";
+import Loader from "../../../components/Loader";
+import StypeCard from "../../../components/StypeCard";
 import COLORS from "../../../constants/colors";
+import { useAuthStore } from "../../../store/authStore";
 import { useKladStore } from "../../../store/kladStore";
 
 export default function CategoryIndex() {
-  const [books, setBooks] = useState([]);
+  const [stype, setStype] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [deleteBookId, setDeleteBookId] = useState(null);
-  const { fetchMm, dataMm } = useKladStore();
-  const router = useRouter();
+  const { token } = useAuthStore();
+  const { fetchWm } = useKladStore();
+  const router = useRouter()
+
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+        "https://stock-opname.devkftd.my.id/api/pid-wm",
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to fetch user books");
+      setStype(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      Alert.alert("Error", "Failed to load profile data. Pull down to refresh.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetchMm();
+    fetchData();
   }, []);
-  console.log(dataMm);
 
-  const renderBookItem = ({ item }) => (
-    <Link key={item._id || item} href={`/category/${item}`} asChild>
-      <Pressable>
-        <View style={styles.bookItem}>
-          <View style={styles.bookInfo}>
-            <Text style={styles.bookTitle}>{item}</Text>
-            <Text style={styles.bookCaption} numberOfLines={2}>
-              {item}
-            </Text>
-            <Text style={styles.bookDate}>
-              {/* {new Date(item.createdAt).toLocaleDateString()} */}
-              {item}
-            </Text>
-          </View>
-
-          <TouchableOpacity
-            style={styles.deleteButton}
-            onPress={() => confirmDelete(item._id)}
-          >
-            {deleteBookId === item._id ? (
-              <ActivityIndicator size="small" color={COLORS.primary} />
-            ) : (
-              <Ionicons name="trash-outline" size={20} color={COLORS.primary} />
-            )}
-          </TouchableOpacity>
-        </View>
-      </Pressable>
-    </Link>
-  );
   const handleRefresh = async () => {
     setRefreshing(true);
     await sleep(500);
     await fetchData();
     setRefreshing(false);
   };
+
+  if (isLoading && !refreshing) return <Loader />;
+
   return (
     <View style={styles.container}>
       <FlatList
-        data={dataMm}
-        renderItem={renderBookItem}
-        keyExtractor={(item) => item._id}
+        data={stype}
+        renderItem={({item}) => <StypeCard item={item}/>}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.booksList}
         refreshControl={

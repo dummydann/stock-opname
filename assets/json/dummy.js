@@ -3,8 +3,8 @@ import ImageWarehouses from "../images/warehouses.jpg";
 
 // Dummy untuk types
 const types = [
-  { id: 1, name: "Warehouses Management", picture: ImageWarehouses },
-  { id: 2, name: "Materials Management", picture: ImageMaterials },
+  { id: 1, name: "Warehouses Management", picture: ImageWarehouses, route: 'stype' },
+  { id: 2, name: "Materials Management", picture: ImageMaterials, route: 'sloc' },
 ];
 
 const tasks = [
@@ -39,3 +39,4 @@ const products = [
 ];
 
 export { products, rounds, tasks, types };
+
