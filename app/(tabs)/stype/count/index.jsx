@@ -8,7 +8,7 @@ import { useKladStore } from "../../../../store/kladStore";
 
 export default function Count() {
   const {code} = useLocalSearchParams();
-  const { dataWm, fetchWm, fetchWmByStype, dataWmByStype } = useKladStore();
+  const { dataWm, fetchWm, fetchWmByStype, dataWmByStype, storeByFormWm, error } = useKladStore();
   const [storageBin, setStorageBin] = useState('');
   const [storageUnit, setStorageUnit] = useState('');
   const [material, setMaterial] = useState('');
@@ -46,6 +46,15 @@ export default function Count() {
         Alert.alert("Error", "Please fill in all fields");
         return;
       }else{
+        const data = {
+          storage_bin: storageBin,
+          storage_unit_number: storageUnit,
+          material: material,
+          batch: batch,
+          qty: qty,
+          notes: notes
+        };
+        await storeByFormWm(data);
         Alert.alert('success', "Material success count")
         setStorageBin('')
         setStorageUnit('')
@@ -81,6 +90,7 @@ export default function Count() {
                 inputSearchStyle={style.inputSearchStyle}
                 iconStyle={style.iconStyle}
                 data={datastorageBin}
+                search
                 maxHeight={300}
                 labelField="value"
                 valueField="value"
@@ -101,6 +111,7 @@ export default function Count() {
                 inputSearchStyle={style.inputSearchStyle}
                 iconStyle={style.iconStyle}
                 data={datastorageUnit}
+                search
                 maxHeight={300}
                 labelField="value"
                 valueField="value"
@@ -121,6 +132,7 @@ export default function Count() {
                 inputSearchStyle={style.inputSearchStyle}
                 iconStyle={style.iconStyle}
                 data={datamaterial}
+                search
                 maxHeight={300}
                 labelField="value"
                 valueField="value"
@@ -141,6 +153,7 @@ export default function Count() {
                 inputSearchStyle={style.inputSearchStyle}
                 iconStyle={style.iconStyle}
                 data={databatch}
+                search
                 maxHeight={300}
                 labelField="value"
                 valueField="value"

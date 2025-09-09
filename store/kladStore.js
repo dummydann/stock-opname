@@ -68,24 +68,25 @@ export const useKladStore = create((set) => ({
       console.log(error);
     }
   },
-  storeKlad: async () => {
+  storeByFormWm: async (data) => {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await fetch(
-        `https://stock-opname.devkftd.my.id/api/klad-wm`,
+        `https://stock-opname.devkftd.my.id/api/klad-wm-form`,
         {
           method: "POST",
           headers: {
             Accept: "application/json",
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            data
-          }),
+          body: JSON.stringify(data),
         }
       );
+      const result = await response.json();
+      return result;
     } catch (error) {
-      
+      set({error: error})
     }
   }
 }));
