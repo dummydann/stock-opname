@@ -7,6 +7,14 @@ const types = [
   { id: 2, name: "Materials Management", picture: ImageMaterials, route: 'sloc' },
 ];
 
+const dataRound = [
+  { id: 1, name: "Round 1",},
+  { id: 2, name: "Round 2"},
+  { id: 3, name: "Round 3"},
+  { id: 4, name: "Round 4"},
+  { id: 5, name: "Round 5"},
+];
+
 const tasks = [
   {
     id: "t1",
@@ -38,5 +46,5 @@ const products = [
   { id: 3, name: "Scanner", price: 2000000 },
 ];
 
-export { products, rounds, tasks, types };
+export { dataRound, products, rounds, tasks, types };
 

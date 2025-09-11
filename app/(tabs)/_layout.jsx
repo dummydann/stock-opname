@@ -44,7 +44,7 @@ export default function TabLayout() {
           // ),
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="sloc"
         options={{
           // title: 'Create',
@@ -54,6 +54,14 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="stype"
+        options={{
+          // title: 'Create',
+          href: null,
+          // tabBarIcon: ({color, size}) => (<Ionicons name='add-circle-outline' size={size} color={color} />)
+        }}
+      /> */}
+      <Tabs.Screen
+        name="round"
         options={{
           // title: 'Create',
           href: null,

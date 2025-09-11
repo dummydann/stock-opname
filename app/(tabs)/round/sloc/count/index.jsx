@@ -13,9 +13,10 @@ import {
   View,
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
-import styles from "../../../../assets/styles/create.styles";
-import COLORS from "../../../../constants/colors";
-import { useKladStore } from "../../../../store/kladStore";
+
+import styles from "../../../../../assets/styles/create.styles";
+import COLORS from "../../../../../constants/colors";
+import { useKladStore } from "../../../../../store/kladStore";
 
 export default function Count() {
   const { code } = useLocalSearchParams();
@@ -23,8 +24,11 @@ export default function Count() {
     dataWm,
     fetchWm,
     fetchWmByStype,
+    fetchMmBySloc,
     dataWmByStype,
+    dataMmBySloc,
     storeByFormWm,
+    storeByFormMm,
     error,
   } = useKladStore();
   const [storageBin, setStorageBin] = useState("");
@@ -33,24 +37,14 @@ export default function Count() {
   const [batch, setBatch] = useState("");
   const [qty, setQty] = useState("");
   const [notes, setNotes] = useState("");
-  const [title, setTitle] = useState("");
-  const [caption, setCaption] = useState("");
-  const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [value, setValue] = useState("");
   const [isFocus, setIsFocus] = useState(false);
 
   useEffect(() => {
-    fetchWmByStype(code);
+    fetchMmBySloc(code);
   }, []);
 
-  const datastorageBin = [
-    ...new Set((dataWmByStype ?? []).map((item) => item.storage_bin)),
-  ].map((v) => ({ label: v, value: v }));
-  const datastorageUnit = [
-    ...new Set((dataWmByStype ?? []).map((item) => item.storage_unit_number)),
-  ].map((v) => ({ label: v, value: v }));
   const datamaterial = [
     ...new Set(
       (dataWmByStype ?? []).map((item) => String(item.material.material_id))
@@ -59,26 +53,26 @@ export default function Count() {
   const databatch = [
     ...new Set((dataWmByStype ?? []).map((item) => item.batch)),
   ].map((v) => ({ label: v, value: v }));
-  // console.log(datastorageBin, datastorageUnit, datamaterial, databatch);
 
   const renderLabel = (props) => {
     return <Text style={[styles.label]}>{props}</Text>;
   };
 
   const handleSubmit = async () => {
-    if (!storageBin || !storageUnit || !material || !batch || !qty) {
+    if (!material || !batch || !qty) {
+      setLoading(true)
       Alert.alert("Error", "Please fill in all fields");
+      setLoading(false);
       return;
     } else {
+      setLoading(true)
       const data = {
-        storage_bin: storageBin,
-        storage_unit_number: storageUnit,
         material: material,
         batch: batch,
         qty: qty,
         notes: notes,
       };
-      const result = await storeByFormWm(data);
+      const result = await storeByFormMm(data);
       if (result.success == true) {
         var textAlert = "Success";
       } else {
@@ -86,6 +80,11 @@ export default function Count() {
       }
       Alert.alert(textAlert, result.message);
     }
+    setLoading(false);
+    setMaterial('');
+    setBatch('');
+    setQty('');
+    setNotes('');
   };
   return (
     <KeyboardAvoidingView
@@ -104,48 +103,6 @@ export default function Count() {
           </View>
 
           <View style={styles.form}>
-            <View style={styles.formGroup}>
-              {renderLabel("Storage Bin")}
-              <Dropdown
-                style={[style.dropdown, isFocus && { borderColor: "blue" }]}
-                placeholderStyle={style.placeholderStyle}
-                selectedTextStyle={style.selectedTextStyle}
-                inputSearchStyle={style.inputSearchStyle}
-                iconStyle={style.iconStyle}
-                data={datastorageBin}
-                search
-                maxHeight={300}
-                labelField="value"
-                valueField="value"
-                placeholder={!isFocus ? "Select Storage Bin" : "..."}
-                searchPlaceholder="Search..."
-                value={storageBin}
-                onChange={(item) => {
-                  setStorageBin(item.value);
-                }}
-              />
-            </View>
-            <View style={styles.formGroup}>
-              {renderLabel("Storage Unit Number")}
-              <Dropdown
-                style={[style.dropdown, isFocus && { borderColor: "blue" }]}
-                placeholderStyle={style.placeholderStyle}
-                selectedTextStyle={style.selectedTextStyle}
-                inputSearchStyle={style.inputSearchStyle}
-                iconStyle={style.iconStyle}
-                data={datastorageUnit}
-                search
-                maxHeight={300}
-                labelField="value"
-                valueField="value"
-                placeholder={!isFocus ? "Select Storage Unit" : "..."}
-                searchPlaceholder="Search..."
-                value={storageUnit}
-                onChange={(item) => {
-                  setStorageUnit(item.value);
-                }}
-              />
-            </View>
             <View style={styles.formGroup}>
               {renderLabel("Material")}
               <Dropdown

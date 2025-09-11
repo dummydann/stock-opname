@@ -1,22 +1,23 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
   RefreshControl,
-  TouchableOpacity,
+  Text,
   View
 } from "react-native";
-import { sleep } from "..";
-import styles from "../../../assets/styles/profile.styles";
-import Loader from "../../../components/Loader";
-import StypeCard from "../../../components/StypeCard";
-import COLORS from "../../../constants/colors";
-import { useAuthStore } from "../../../store/authStore";
-import { useKladStore } from "../../../store/kladStore";
+import { sleep } from "../..";
+import styles from "../../../../assets/styles/profile.styles";
+import Loader from "../../../../components/Loader";
+import StypeCard from "../../../../components/StypeCard";
+import COLORS from "../../../../constants/colors";
+import { useAuthStore } from "../../../../store/authStore";
+import { useKladStore } from "../../../../store/kladStore";
 
 export default function CategoryIndex() {
+  const {round_id} = useLocalSearchParams();
   const [stype, setStype] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -63,9 +64,10 @@ export default function CategoryIndex() {
 
   return (
     <View style={styles.container}>
+      <Stack.Screen options={{title: "Storage Type"}} />
       <FlatList
         data={stype}
-        renderItem={({item}) => <StypeCard item={item}/>}
+        renderItem={({item}) => <StypeCard item={item} round={round_id}/>}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.booksList}
         refreshControl={
@@ -79,17 +81,11 @@ export default function CategoryIndex() {
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons
-              name="book-outline"
+              name="alert-circle-outline"
               size={50}
               color={COLORS.textSecondary}
             />
-            <Text style={styles.emptyText}>No recommendations yet</Text>
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={() => router.push("/create")}
-            >
-              <Text style={styles.addButtonText}>Add Your First Book</Text>
-            </TouchableOpacity>
+            <Text style={styles.emptyText}>Belum ada data</Text>
           </View>
         }
       />

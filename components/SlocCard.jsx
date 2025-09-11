@@ -2,11 +2,11 @@ import { Link } from 'expo-router';
 import { Text, View } from 'react-native';
 import styles from '../assets/styles/profile.styles';
 
-export default function StypeCard({item, round}) {
+export default function SlocCard({item, round}) {
   return (
     <Link
           href={{
-            pathname: `round/stype/${item}`,
+            pathname: `/round/sloc/${item}`,
             params: { code: item, round: round },
           }}
           style={{ textDecorationLine: "none" }}
@@ -17,6 +17,7 @@ export default function StypeCard({item, round}) {
         <Text style={styles.bookCaption} numberOfLines={2}>
           {item}
         </Text>
+        {/* <Text style={styles.bookDate}>{new Date(item.createdAt).toLocaleDateString()}</Text> */}
       </View>
     </View>
     </Link>

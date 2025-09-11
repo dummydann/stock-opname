@@ -4,7 +4,10 @@ import { create } from "zustand";
 export const useKladStore = create((set) => ({
   dataMm: null,
   dataWmByStype: null,
+  dataMmBySloc: null,
   dataWm: null,
+  kladWm: null,
+  kladMm: null,
   isLoading: false,
   error: null,
   fetchMm: async () => {
@@ -68,6 +71,25 @@ export const useKladStore = create((set) => ({
       console.log(error);
     }
   },
+  fetchMmBySloc: async (param) => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const response = await fetch(
+        `https://stock-opname.devkftd.my.id/api/pid-mm/${param}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      set({ dataWmByStype: data });
+    } catch (error) {
+      console.log(error);
+    }
+  },
   storeByFormWm: async (item) => {
     try {
       const token = await AsyncStorage.getItem("token");
@@ -91,4 +113,67 @@ export const useKladStore = create((set) => ({
       set({ error: error });
     }
   },
+  storeByFormMm: async (item) => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const response = await fetch(
+        `https://stock-opname.devkftd.my.id/api/klad-mm-form`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(item),
+        }
+      );
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Something went wrong");
+      set({ isLoading: false });
+      return { success: data.success, message: data.message };
+    } catch (error) {
+      set({ error: error });
+    }
+  },
+  getKladWm: async (item) => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const query = new URLSearchParams(item).toString();
+      const response = await fetch(
+        `https://stock-opname.devkftd.my.id/api/klad-wm?${query}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      set({kladWm: data})
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  getKladMm: async (item) => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const query = new URLSearchParams(item).toString();
+      const response = await fetch(
+        `https://stock-opname.devkftd.my.id/api/klad-mm?${query}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      set({kladMm: data})
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }));
