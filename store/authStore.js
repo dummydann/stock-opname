@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
-
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 export const useAuthStore = create((set) => ({
   user: null,
   token: null,
@@ -31,8 +31,6 @@ export const useAuthStore = create((set) => ({
     }
   },
   login: async (email, password) => {
-    console.log(email, password);
-    
     set({ isLoading: true });
     try {
       const response = await fetch(
@@ -56,38 +54,53 @@ export const useAuthStore = create((set) => ({
       return { success: true };
     } catch (error) {
       set({ isLoading: false });
-      return { success: false, error: error.message };
+      return { error: error.message };
     }
   },
   checkAuth: async () => {
     try {
-      const token = await AsyncStorage.getItem('token');
-      const userJson = await AsyncStorage.getItem('user');
-      
-      const user = userJson ? JSON.parse(userJson) : null;
-      set({token, user})
+      const token = await AsyncStorage.getItem("token");
+      const userJson = await AsyncStorage.getItem("user");
+      const response = await fetch(
+        "https://stock-opname.devkftd.my.id/api/user",
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      if (data.message) {
+        // gagal login
+        set({ user: null, token: null, isLoading: false });
+      } else {
+        const user = data;
+        set({ token, user });
+      }
     } catch (error) {
-      console.log('Auth check failed', error);
+      console.log("Auth check failed", error);
     }
   },
   logout: async () => {
     try {
-      const token = await AsyncStorage.getItem('token');
+      const token = await AsyncStorage.getItem("token");
       const response = await fetch(
         "https://stock-opname.devkftd.my.id/api/logout-sanctum",
         {
           method: "POST",
           headers: {
-            "Accept": "application/json",
-            "Authorization": `Bearer ${token}`
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-      await AsyncStorage.removeItem('token');
-      await AsyncStorage.removeItem('user');
-      set({token: null, user: null})
+      await AsyncStorage.removeItem("token");
+      await AsyncStorage.removeItem("user");
+      set({ token: null, user: null });
     } catch (error) {
-      console.log('Logout failed', error);
+      console.log("Logout failed", error);
     }
-  }
+  },
 }));

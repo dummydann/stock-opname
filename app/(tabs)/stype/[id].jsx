@@ -6,7 +6,7 @@ export default function Detail() {
   const { id, code } = useLocalSearchParams();
   return (
     <View style={styles.emptyContainer}>
-      <Stack.Screen options={{title: id}} />
+      <Stack.Screen options={{ title: id }} />
       {/* <Ionicons
         name="add-circle-outlineaa"
         size={50}
@@ -16,11 +16,13 @@ export default function Detail() {
       <Link
         style={styles.addButton}
         href={{
-            pathname: `/stype/count`,
-            params: { code: id },
-          }}
+          pathname: `/stype/count`,
+          params: { code: id },
+        }}
       >
-        <Text style={styles.addButtonText}>Count Now</Text>
+        <View>
+          <Text style={styles.addButtonText}>Count Now</Text>
+        </View>
       </Link>
     </View>
   );

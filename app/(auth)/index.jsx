@@ -22,10 +22,12 @@ export default function Login() {
   const { isLoading, user, login, token } = useAuthStore();
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
     const result = await login(email, password);
-    console.log(result);
-    
-    if(!result.success) Alert.alert('Error', result.error)
+    if (!result.success) Alert.alert("Error", result.error);
   };
 
   return (
@@ -35,7 +37,7 @@ export default function Login() {
     >
       <View style={styles.container}>
         <View style={styles.topIllustration}>
-          <Text style={[styles.title, {marginBottom: 50}]}>Stock Opname</Text>
+          <Text style={[styles.title, { marginBottom: 50 }]}>Stock Opname</Text>
           {/* <Image
             source={require("../../assets/images/i.png")}
             style={styles.illustrationImage}

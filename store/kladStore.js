@@ -63,14 +63,14 @@ export const useKladStore = create((set) => ({
         }
       );
       const data = await response.json();
-      set({dataWmByStype: data});
+      set({ dataWmByStype: data });
     } catch (error) {
       console.log(error);
     }
   },
-  storeByFormWm: async (data) => {
+  storeByFormWm: async (item) => {
     try {
-      const token = await AsyncStorage.getItem('token');
+      const token = await AsyncStorage.getItem("token");
       const response = await fetch(
         `https://stock-opname.devkftd.my.id/api/klad-wm-form`,
         {
@@ -80,13 +80,15 @@ export const useKladStore = create((set) => ({
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify(item),
         }
       );
-      const result = await response.json();
-      return result;
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Something went wrong");
+      set({ isLoading: false });
+      return { success: data.success, message: data.message };
     } catch (error) {
-      set({error: error})
+      set({ error: error });
     }
-  }
+  },
 }));

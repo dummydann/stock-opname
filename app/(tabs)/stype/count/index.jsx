@@ -1,20 +1,38 @@
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import styles from "../../../../assets/styles/create.styles";
 import COLORS from "../../../../constants/colors";
 import { useKladStore } from "../../../../store/kladStore";
 
 export default function Count() {
-  const {code} = useLocalSearchParams();
-  const { dataWm, fetchWm, fetchWmByStype, dataWmByStype, storeByFormWm, error } = useKladStore();
-  const [storageBin, setStorageBin] = useState('');
-  const [storageUnit, setStorageUnit] = useState('');
-  const [material, setMaterial] = useState('');
-  const [batch, setBatch] = useState('');
-  const [qty, setQty] = useState('');
-  const [notes, setNotes] = useState('');
+  const { code } = useLocalSearchParams();
+  const {
+    dataWm,
+    fetchWm,
+    fetchWmByStype,
+    dataWmByStype,
+    storeByFormWm,
+    error,
+  } = useKladStore();
+  const [storageBin, setStorageBin] = useState("");
+  const [storageUnit, setStorageUnit] = useState("");
+  const [material, setMaterial] = useState("");
+  const [batch, setBatch] = useState("");
+  const [qty, setQty] = useState("");
+  const [notes, setNotes] = useState("");
   const [title, setTitle] = useState("");
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState(null);
@@ -23,47 +41,52 @@ export default function Count() {
   const [value, setValue] = useState("");
   const [isFocus, setIsFocus] = useState(false);
 
-  useEffect(()=>{
-    fetchWmByStype(code)
-  },[])
+  useEffect(() => {
+    fetchWmByStype(code);
+  }, []);
 
-  const datastorageBin   = [...new Set((dataWmByStype ?? []).map(item => item.storage_bin))].map(v => ({ label: v, value: v }));
-  const datastorageUnit  = [...new Set((dataWmByStype ?? []).map(item => item.storage_unit_number))].map(v => ({ label: v, value: v }));
-  const datamaterial     = [...new Set((dataWmByStype ?? []).map(item => String(item.material.material_id)))].map(v => ({ label: v, value: v }));
-  const databatch        = [...new Set((dataWmByStype ?? []).map(item => item.batch))].map(v => ({ label: v, value: v }));
+  const datastorageBin = [
+    ...new Set((dataWmByStype ?? []).map((item) => item.storage_bin)),
+  ].map((v) => ({ label: v, value: v }));
+  const datastorageUnit = [
+    ...new Set((dataWmByStype ?? []).map((item) => item.storage_unit_number)),
+  ].map((v) => ({ label: v, value: v }));
+  const datamaterial = [
+    ...new Set(
+      (dataWmByStype ?? []).map((item) => String(item.material.material_id))
+    ),
+  ].map((v) => ({ label: v, value: v }));
+  const databatch = [
+    ...new Set((dataWmByStype ?? []).map((item) => item.batch)),
+  ].map((v) => ({ label: v, value: v }));
   // console.log(datastorageBin, datastorageUnit, datamaterial, databatch);
-  
+
   const renderLabel = (props) => {
-      return (
-        <Text style={[styles.label]}>
-          {props}
-        </Text>
-      );
+    return <Text style={[styles.label]}>{props}</Text>;
   };
 
   const handleSubmit = async () => {
-      if (!storageBin || !storageUnit || !material || !batch || !qty || !notes) {
-        Alert.alert("Error", "Please fill in all fields");
-        return;
-      }else{
-        const data = {
-          storage_bin: storageBin,
-          storage_unit_number: storageUnit,
-          material: material,
-          batch: batch,
-          qty: qty,
-          notes: notes
-        };
-        await storeByFormWm(data);
-        Alert.alert('success', "Material success count")
-        setStorageBin('')
-        setStorageUnit('')
-        setMaterial('')
-        setBatch('')
-        setQty('')
-        setNotes('')
+    if (!storageBin || !storageUnit || !material || !batch || !qty) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    } else {
+      const data = {
+        storage_bin: storageBin,
+        storage_unit_number: storageUnit,
+        material: material,
+        batch: batch,
+        qty: qty,
+        notes: notes,
+      };
+      const result = await storeByFormWm(data);
+      if (result.success == true) {
+        var textAlert = "Success";
+      } else {
+        var textAlert = "Error";
       }
-    };
+      Alert.alert(textAlert, result.message);
+    }
+  };
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -80,7 +103,7 @@ export default function Count() {
             {/* <Text style={styles.subtitle}>Share your favorite reads with others</Text> */}
           </View>
 
-         <View style={styles.form}>
+          <View style={styles.form}>
             <View style={styles.formGroup}>
               {renderLabel("Storage Bin")}
               <Dropdown
