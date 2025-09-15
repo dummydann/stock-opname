@@ -13,6 +13,9 @@ const dataRound = [
   { id: 3, name: "Round 3"},
   { id: 4, name: "Round 4"},
   { id: 5, name: "Round 5"},
+  { id: 6, name: "Round 6"},
+  { id: 7, name: "Round 7"},
+  { id: 8, name: "Round 8"},
 ];
 
 const tasks = [

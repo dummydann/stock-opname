@@ -65,8 +65,8 @@ export const useKladStore = create((set) => ({
           },
         }
       );
-      const data = await response.json();
-      set({ dataWmByStype: data });
+      const result = await response.json();
+      set({ dataWmByStype: result.data });
     } catch (error) {
       console.log(error);
     }
@@ -85,7 +85,7 @@ export const useKladStore = create((set) => ({
         }
       );
       const data = await response.json();
-      set({ dataWmByStype: data });
+      set({ dataMmBySloc: data });
     } catch (error) {
       console.log(error);
     }

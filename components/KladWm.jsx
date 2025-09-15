@@ -22,14 +22,14 @@ export default function MaterialCard({item}) {
           <Text
             style={{
               color:
-                item.status === 0
+                item.status === 'equal'
                   ? "green"   // equal
-                  : item.status > 0
+                  : item.status == 0
                   ? "red"     // positif
                   : "red",    // negatif
             }}
           >
-            {item.status}
+            {item.status == 'equal' ? "Equal" : item.status == 'negatif' ? "Selisih" : "Selisih Positif"}
           </Text>
         </Text>
         <Text style={styles.bookDate}>{new Date(item.created_at).toLocaleDateString()}</Text>
