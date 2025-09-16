@@ -33,7 +33,7 @@ export default function Detail() {
           <Pressable
             onPress={() => router.push({
               pathname: "round/stype/count",
-              params: { code: id }, 
+              params: { code: id, check_category: round }, 
             })} 
             style={{ marginRight: 15 }}
           >

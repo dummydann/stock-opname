@@ -20,87 +20,83 @@ import COLORS from "../../../../../constants/colors";
 import { useKladStore } from "../../../../../store/kladStore";
 
 export default function Count() {
-  const { code } = useLocalSearchParams();
+  const { code, check_category } = useLocalSearchParams();
   const {
-    dataWm,
-    fetchWm,
-    fetchWmByStype,
-    dataWmByStype,
+    fetchPidWm,
+    pidWm,
     storeByFormWm,
-    error,
   } = useKladStore();
   const [storageBin, setStorageBin] = useState("");
   const [storageUnit, setStorageUnit] = useState("");
-  const [material, setMaterial] = useState("");
+  const [material, setMaterial] = useState([]);
   const [batch, setBatch] = useState("");
-  const [qty, setQty] = useState("");
+  const [qty, setQty] = useState(0);
   const [notes, setNotes] = useState("");
-  const [unit, setUnit] = useState("Satuan");
-  const [title, setTitle] = useState("");
-  const [caption, setCaption] = useState("");
-  const [image, setImage] = useState(null);
+  const [unit, setUnit] = useState("");
   const [loading, setLoading] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const [value, setValue] = useState("");
-  const [isFocus, setIsFocus] = useState(false);
-  const [selectedValue, setSelectedValue] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
   const [modalStorageBin, setModalStorageBin] = useState(false);
   const [modalStorageUnit, setModalStorageUnit] = useState(false);
   const [modalMaterial, setModalMaterial] = useState(false);
   const [modalBatch, setModalBatch] = useState(false);
   const [modalUnit, setModalUnit] = useState(false);
   const [search, setSearch] = useState("");
-  
 
   useEffect(() => {
-    fetchWmByStype(code);
+    fetchPidWm(code, check_category);
+    // fetchWmByStype(code);
   }, []);
- // Selalu ambil semua bin
-  const datastorageBin = [
-    ...new Set((dataWmByStype ?? []).map(item => item.storage_bin)
-      .filter(bin => bin?.toLowerCase().includes(search.toLowerCase())))
-  ];
 
-  // Unit: kalau bin sudah dipilih, filter berdasarkan bin
-  const datastorageUnit = [
-    ...new Set((dataWmByStype ?? [])
-      .filter(item => storageBin ? item.storage_bin === storageBin : true)
-      .map(item => item.storage_unit_number)
-      .filter(unit => unit?.toLowerCase().includes(search.toLowerCase())))
-  ];
+  // Storage Bin → kalau user sudah pilih material / unit / batch, filter ikut nyusut
+const datastorageBin = [
+  ...new Set(
+    pidWm
+      .filter(item => (storageUnit ? item.storage_unit === storageUnit : true))
+      .filter(item => (material.id ? item.materials.id === material : true))
+      .filter(item => (batch ? item.batch === batch : true))
+      .map(item => item.storage_bin)
+  ),
+] ?? [];
 
-  // Material: filter kalau ada unit/bin dipilih
-  const datamaterial = [
-    ...new Set((dataWmByStype ?? [])
-      .filter(item => storageBin ? item.storage_bin === storageBin : true)
-      .filter(item => storageUnit ? item.storage_unit_number === storageUnit : true)
-      .map(item => ({
-        material: item.material.material_id,
-        desc: `${item.material.material_id} - ${item.material.desc_material}`
-      }))
-      .filter(m =>
-        m.material.toString().includes(search) ||
-        m.desc.toLowerCase().includes(search.toLowerCase())
-      ))
-  ];
+// Storage Unit
+const datastorageUnit = [
+  ...new Set(
+    pidWm
+      .filter(item => (storageBin ? item.storage_bin === storageBin : true))
+      .filter(item => (material.id ? item.materials.id === material.id : true))
+      .filter(item => (batch ? item.batch === batch : true))
+      .map(item => item.storage_unit)
+  ),
+] ?? [];
 
-  // Batch: filter kalau ada material/unit/bin dipilih
-  const databatch = [
-    ...new Set((dataWmByStype ?? [])
-      .filter(item => storageBin ? item.storage_bin === storageBin : true)
-      .filter(item => storageUnit ? item.storage_unit_number === storageUnit : true)
-      .filter(item => material ? item.material.material_id === material : true)
+// Material
+const datamaterial = pidWm
+  .filter(item => (storageBin ? item.storage_bin === storageBin : true))
+  .filter(item => (storageUnit ? item.storage_unit === storageUnit : true))
+  .filter(item => (batch ? item.batch === batch : true))
+  .map(item => item.materials)
+  .filter((v, i, arr) => arr.findIndex(x => x.id === v.id) === i);
+
+// Batch
+const databatch = [
+  ...new Set(
+    pidWm
+      .filter(item => (storageBin ? item.storage_bin === storageBin : true))
+      .filter(item => (storageUnit ? item.storage_unit === storageUnit : true))
+      .filter(item => (material.id ? item.materials.id === material.id : true))
       .map(item => item.batch)
-      .filter(b => b?.toLowerCase().includes(search.toLowerCase())))
-  ];
+  ),
+];
 
-  
-  const dataunit = [
-    ...new Set((dataWmByStype ?? []).map((item) => item.base_uom)),
-  ].filter((item) =>
-    item.includes(search)
-  );
+const dataunit = material
+  ? [
+      ...new Set(
+        pidWm
+          .filter(item => item.materials.id === material.id)
+          .flatMap(item => item.uoms || [])
+      ),
+    ]
+  : [];
+
   const increment = () => setQty((prev) => String(Number(prev) + 1));
   const decrement = () => {
     setQty((prev) => {
@@ -110,16 +106,17 @@ export default function Count() {
   };
 
   const handleSubmit = async () => {
-    if (!storageBin || !storageUnit || !material || !batch || !qty) {
+    if (!storageBin || !storageUnit || !material || !batch || !qty || !unit) {
       Alert.alert("Error", "Please fill in all fields");
       return;
     } else {
       const data = {
         storage_bin: storageBin,
         storage_unit_number: storageUnit,
-        material: material,
+        material: material.material,
         batch: batch,
         qty: qty,
+        unit: unit,
         notes: notes,
       };
       const result = await storeByFormWm(data);
@@ -144,7 +141,7 @@ export default function Count() {
         <View style={styles.card}>
           {/* HEADER */}
           <View style={styles.header}>
-            <Text style={styles.title}>Count Product</Text>
+            <Text style={styles.title}>Storage Type = {code}</Text>
             {/* <Text style={styles.subtitle}>Share your favorite reads with others</Text> */}
           </View>
 
@@ -323,7 +320,7 @@ export default function Count() {
                 }}
                 onPress={() => setModalMaterial(true)}
               >
-                <Text>{material || "Select Material..."}</Text>
+                <Text>{material.desc || "Select Material..."}</Text>
               </TouchableOpacity>
               <Modal visible={modalMaterial} transparent animationType="fade">
                 <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.3)" }}>
@@ -355,7 +352,7 @@ export default function Count() {
                       renderItem={({ item }) => (
                         <TouchableOpacity
                           onPress={() => {
-                            setMaterial(item.material);
+                            setMaterial(item);
                             setModalMaterial(false);
                             setSearch("");
                           }}
@@ -481,7 +478,7 @@ export default function Count() {
                     borderColor: COLORS.border,
                   }}
                 >
-                  <Text style={{ fontSize: 18 }}>+</Text>
+                  <Text style={{ fontSize: 18 }}>-</Text>
                 </TouchableOpacity>
 
                 {/* Input Qty */}
@@ -497,10 +494,9 @@ export default function Count() {
                     borderWidth: 1,
                     borderColor: COLORS.border,
                   }}
-                  placeholder="0"
                   keyboardType="numeric"
-                  value={qty}
-                  onChangeText={setQty}
+                  value={String(qty)}
+                  onChangeText={(text) => setQty(Number(text) || 0)}
                 />
 
                 {/* Tombol + */}
@@ -533,7 +529,7 @@ export default function Count() {
                   }}
                   onPress={() => setModalUnit(true)}
                 >
-                  <Text style={{ marginRight: 6 }}>{unit}</Text>
+                  <Text style={{ marginRight: 6 }}>{unit || "Satuan"}</Text>
                   <Ionicons name="chevron-down" size={16} color="#333" />
                 </TouchableOpacity>
                 <Modal visible={modalUnit} transparent animationType="fade">

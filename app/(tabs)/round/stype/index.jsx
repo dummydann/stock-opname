@@ -1,8 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-  Alert,
   FlatList,
   RefreshControl,
   Text,
@@ -13,50 +12,21 @@ import styles from "../../../../assets/styles/profile.styles";
 import Loader from "../../../../components/Loader";
 import StypeCard from "../../../../components/StypeCard";
 import COLORS from "../../../../constants/colors";
-import { useAuthStore } from "../../../../store/authStore";
 import { useKladStore } from "../../../../store/kladStore";
 
 export default function CategoryIndex() {
   const {round_id} = useLocalSearchParams();
-  const [stype, setStype] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const { token } = useAuthStore();
-  const { fetchWm } = useKladStore();
-  const router = useRouter()
-
-  const fetchData = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(
-        "https://stock-opname.devkftd.my.id/api/pid-wm",
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Failed to fetch user books");
-      setStype(data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      Alert.alert("Error", "Failed to load profile data. Pull down to refresh.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { fetchStorageType, storageType, isLoading } = useKladStore();
 
   useEffect(() => {
-    fetchData();
+    fetchStorageType(round_id)
   }, []);
 
   const handleRefresh = async () => {
     setRefreshing(true);
     await sleep(500);
-    await fetchData();
+    await fetchStorageType(round_id);
     setRefreshing(false);
   };
 
@@ -66,7 +36,7 @@ export default function CategoryIndex() {
     <View style={styles.container}>
       <Stack.Screen options={{title: "Storage Type"}} />
       <FlatList
-        data={stype}
+        data={storageType}
         renderItem={({item}) => <StypeCard item={item} round={round_id}/>}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.booksList}

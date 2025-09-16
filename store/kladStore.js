@@ -1,7 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Alert } from "react-native";
 import { create } from "zustand";
 
 export const useKladStore = create((set) => ({
+  pidWm: [],
+  pidMm: [],
+  storageType: null,
+  storageLocation: null,
   dataMm: null,
   dataWmByStype: null,
   dataMmBySloc: null,
@@ -10,12 +15,12 @@ export const useKladStore = create((set) => ({
   kladMm: null,
   isLoading: false,
   error: null,
-  fetchMm: async () => {
+  fetchStorageType: async (round) => {
     try {
-      set({ isLoading: true, error: null });
+      set({isLoading: true})
       const token = await AsyncStorage.getItem("token");
       const response = await fetch(
-        "https://stock-opname.devkftd.my.id/api/pid-mm",
+        `https://stock-opname.devkftd.my.id/api/pid-wm/stype?check_category=${round}`,
         {
           method: "GET",
           headers: {
@@ -24,19 +29,21 @@ export const useKladStore = create((set) => ({
           },
         }
       );
-      const data = await response.json();
-      set({ dataMm: data, isLoading: false });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || "Failed to fetch Storage Type");
+      set({storageType: result.data, isLoading: false});
     } catch (error) {
-      console.error("Error fetching data:", error);
-      set({ error: error.message, isLoading: false });
+      set({isLoading: true})
+      Alert.alert("Error", "Failed to load storage type.");
+      set({isLoading: false})
     }
   },
-  fetchWm: async () => {
+  fetchStorageLocation: async (round) => {
     try {
-      set({ isLoading: true, error: null });
+      set({isLoading: true})
       const token = await AsyncStorage.getItem("token");
       const response = await fetch(
-        "https://stock-opname.devkftd.my.id/api/pid-wm",
+        `https://stock-opname.devkftd.my.id/api/pid-mm/sloc?check_category=${round}`,
         {
           method: "GET",
           headers: {
@@ -45,11 +52,33 @@ export const useKladStore = create((set) => ({
           },
         }
       );
-      const data = await response.json();
-      set({ dataWm: data, isLoading: false });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || "Failed to fetch Storage Type");
+      set({storageLocation: result.data, isLoading: false});
+    } catch (error) {
+      set({isLoading: true})
+      Alert.alert("Error", "Failed to load storage type.");
+      set({isLoading: false})
+    }
+  },
+  fetchPidWm: async (code, round) => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const response = await fetch(
+        `https://stock-opname.devkftd.my.id/api/pid-wm?code=${code}&check_category=${round}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || "Failed to fetch PID WM");
+      set({pidWm: result.data, isLoading: false});
     } catch (error) {
       console.log(error);
-      set({ error: error.message, isLoading: false });
     }
   },
   fetchWmByStype: async (param) => {
@@ -175,5 +204,5 @@ export const useKladStore = create((set) => ({
     } catch (error) {
       console.log(error);
     }
-  }
+  },
 }));
