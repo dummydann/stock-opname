@@ -34,7 +34,7 @@ export default function CategoryIndex() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{title: "Storage Type"}} />
+      <Stack.Screen options={{title: "Storage Type", headerStyle: { height: 56 },}} />
       <FlatList
         data={storageType}
         renderItem={({item}) => <StypeCard item={item} round={round_id}/>}

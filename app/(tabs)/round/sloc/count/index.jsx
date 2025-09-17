@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  FlatList,
   KeyboardAvoidingView,
+  Modal,
   Platform,
   ScrollView,
   StyleSheet,
@@ -12,65 +14,77 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Dropdown } from "react-native-element-dropdown";
 
+import { Ionicons } from "@expo/vector-icons";
 import styles from "../../../../../assets/styles/create.styles";
 import COLORS from "../../../../../constants/colors";
 import { useKladStore } from "../../../../../store/kladStore";
 
 export default function Count() {
-  const { code } = useLocalSearchParams();
-  const {
-    dataWm,
-    fetchWm,
-    fetchWmByStype,
-    fetchMmBySloc,
-    dataWmByStype,
-    dataMmBySloc,
-    storeByFormWm,
-    storeByFormMm,
-    error,
-  } = useKladStore();
-  const [storageBin, setStorageBin] = useState("");
-  const [storageUnit, setStorageUnit] = useState("");
+  const { code, check_category } = useLocalSearchParams();
+  const { fetchPidMm, pidMm, storeByFormMm, isLoading } = useKladStore();
   const [material, setMaterial] = useState("");
   const [batch, setBatch] = useState("");
-  const [qty, setQty] = useState("");
+  const [qty, setQty] = useState(0);
   const [notes, setNotes] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const [isFocus, setIsFocus] = useState(false);
+
+  const [unit, setUnit] = useState("");
+  const [modalMaterial, setModalMaterial] = useState(false);
+  const [modalBatch, setModalBatch] = useState(false);
+  const [modalUnit, setModalUnit] = useState(false);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetchMmBySloc(code);
+    fetchPidMm(code, check_category);
   }, []);
 
   const datamaterial = [
-    ...new Set(
-      (dataWmByStype ?? []).map((item) => String(item.material.material_id))
-    ),
-  ].map((v) => ({ label: v, value: v }));
+    ...new Map(
+      pidMm
+        .map(i => [i.materials.id, i.materials])
+    ).values()
+  ];
+  
   const databatch = [
-    ...new Set((dataWmByStype ?? []).map((item) => item.batch)),
-  ].map((v) => ({ label: v, value: v }));
+    ...new Set(
+      pidMm
+        .filter(
+          i =>
+            (!material || i.materials.id === material.id)
+        )
+        .map(i => i.batch)
+    )
+  ];
 
-  const renderLabel = (props) => {
-    return <Text style={[styles.label]}>{props}</Text>;
-  };
+  const dataunit = [
+    ...new Set(
+      pidMm
+        .filter(i => !material || i.materials.id === material.id)
+        .flatMap(i => i.uoms)
+    )
+  ];
+
+  const increment = () => setQty((prev) => String(Number(prev) + 1));
+  const decrement = () => {
+      setQty((prev) => {
+        const newValue = Math.max(0, Number(prev) - 1);
+        return String(newValue);
+      });
+    };
 
   const handleSubmit = async () => {
     if (!material || !batch || !qty) {
-      setLoading(true)
       Alert.alert("Error", "Please fill in all fields");
-      setLoading(false);
       return;
     } else {
-      setLoading(true)
       const data = {
+        check_category: check_category,
+        sloc: code,
         material: material,
         batch: batch,
         qty: qty,
         notes: notes,
+        satuan: unit
       };
       const result = await storeByFormMm(data);
       if (result.success == true) {
@@ -80,7 +94,6 @@ export default function Count() {
       }
       Alert.alert(textAlert, result.message);
     }
-    setLoading(false);
     setMaterial('');
     setBatch('');
     setQty('');
@@ -98,65 +111,301 @@ export default function Count() {
         <View style={styles.card}>
           {/* HEADER */}
           <View style={styles.header}>
-            <Text style={styles.title}>Count Product</Text>
+            <Text style={styles.title}>Storage Location = {code}</Text>
             {/* <Text style={styles.subtitle}>Share your favorite reads with others</Text> */}
           </View>
 
           <View style={styles.form}>
             <View style={styles.formGroup}>
-              {renderLabel("Material")}
-              <Dropdown
-                style={[style.dropdown, isFocus && { borderColor: "blue" }]}
-                placeholderStyle={style.placeholderStyle}
-                selectedTextStyle={style.selectedTextStyle}
-                inputSearchStyle={style.inputSearchStyle}
-                iconStyle={style.iconStyle}
-                data={datamaterial}
-                search
-                maxHeight={300}
-                labelField="value"
-                valueField="value"
-                placeholder={!isFocus ? "Select Material" : "..."}
-                searchPlaceholder="Search..."
-                value={material}
-                onChange={(item) => {
-                  setMaterial(item.value);
+              <Text style={styles.label}>Material</Text>
+              <TouchableOpacity
+                style={{
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: COLORS.border,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  borderRadius: 6,
+                  height: 48,
+                  backgroundColor: COLORS.inputBackground,
+                  paddingHorizontal: 12,
                 }}
-              />
+                onPress={() => setModalMaterial(true)}
+              >
+                <Text>{material.desc || "Select Material..."}</Text>
+              </TouchableOpacity>
+              <Modal visible={modalMaterial} transparent animationType="fade">
+                <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.3)" }}>
+                  <View
+                    style={{
+                      height: "50%", // setengah layar
+                      backgroundColor: "#fff",
+                      borderTopLeftRadius: 16,
+                      borderTopRightRadius: 16,
+                      padding: 20,
+                    }}
+                  >
+                    <TextInput
+                      placeholder="Cari..."
+                      value={search}
+                      onChangeText={setSearch}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "#ccc",
+                        padding: 10,
+                        borderRadius: 6,
+                        marginBottom: 10,
+                      }}
+                    />
+
+                    <FlatList
+                      data={datamaterial}
+                      keyExtractor={(item, index) => index.toString()}
+                      renderItem={({ item }) => (
+                        <TouchableOpacity
+                          onPress={() => {
+                            setMaterial(item);
+                            setBatch("");
+                            setModalMaterial(false);
+                            setSearch("");
+                          }}
+                          style={{
+                            padding: 12,
+                            borderBottomWidth: 1,
+                            borderBottomColor: "#eee",
+                          }}
+                        >
+                          <Text>{item.desc}</Text>
+                        </TouchableOpacity>
+                      )}
+                    />
+                    
+                    <TouchableOpacity
+                      onPress={() => setModalMaterial(false)}
+                      style={{
+                        marginTop: 10,
+                        padding: 12,
+                        backgroundColor: "tomato",
+                        borderRadius: 6,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={{ color: "#fff" }}>Tutup</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Modal>
             </View>
             <View style={styles.formGroup}>
-              {renderLabel("Batch")}
-              <Dropdown
-                style={[style.dropdown, isFocus && { borderColor: "blue" }]}
-                placeholderStyle={style.placeholderStyle}
-                selectedTextStyle={style.selectedTextStyle}
-                inputSearchStyle={style.inputSearchStyle}
-                iconStyle={style.iconStyle}
-                data={databatch}
-                search
-                maxHeight={300}
-                labelField="value"
-                valueField="value"
-                placeholder={!isFocus ? "Select Batch" : "..."}
-                searchPlaceholder="Search..."
-                value={batch}
-                onChange={(item) => {
-                  setBatch(item.value);
+              <Text style={styles.label}>Batch</Text>
+              <TouchableOpacity
+                style={{
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: COLORS.border,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  borderRadius: 6,
+                  height: 48,
+                  backgroundColor: COLORS.inputBackground,
+                  paddingHorizontal: 12,
                 }}
-              />
+                onPress={() => setModalBatch(true)}
+              >
+                <Text>{batch || "Select Batch..."}</Text>
+              </TouchableOpacity>
+              <Modal visible={modalBatch} transparent animationType="fade">
+                <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.3)" }}>
+                  <View
+                    style={{
+                      height: "50%", // setengah layar
+                      backgroundColor: "#fff",
+                      borderTopLeftRadius: 16,
+                      borderTopRightRadius: 16,
+                      padding: 20,
+                    }}
+                  >
+                    <TextInput
+                      placeholder="Cari..."
+                      value={search}
+                      onChangeText={setSearch}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "#ccc",
+                        padding: 10,
+                        borderRadius: 6,
+                        marginBottom: 10,
+                      }}
+                    />
+
+                    <FlatList
+                      data={databatch}
+                      keyExtractor={(item, index) => index.toString()}
+                      renderItem={({ item }) => (
+                        <TouchableOpacity
+                          onPress={() => {
+                            setBatch(item);
+                            setModalBatch(false);
+                            setSearch("");
+                          }}
+                          style={{
+                            padding: 12,
+                            borderBottomWidth: 1,
+                            borderBottomColor: "#eee",
+                          }}
+                        >
+                          <Text>{item}</Text>
+                        </TouchableOpacity>
+                      )}
+                    />
+                    
+                    <TouchableOpacity
+                      onPress={() => setModalBatch(false)}
+                      style={{
+                        marginTop: 10,
+                        padding: 12,
+                        backgroundColor: "tomato",
+                        borderRadius: 6,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={{ color: "#fff" }}>Tutup</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Modal>
             </View>
 
             <View style={styles.formGroup}>
               <Text style={styles.label}>Quantity</Text>
-              <View style={styles.inputContainer}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                {/* Tombol - */}
+                <TouchableOpacity
+                  onPress={decrement}
+                  style={{
+                    paddingVertical: 5,
+                    paddingHorizontal: 12,
+                    backgroundColor: COLORS.inputBackground,
+                    marginRight: 5,
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderColor: COLORS.border,
+                  }}
+                >
+                  <Text style={{ fontSize: 18 }}>-</Text>
+                </TouchableOpacity>
+
+                {/* Input Qty */}
                 <TextInput
-                  style={styles.input}
-                  placeholder="Input Quantity"
-                  placeholderTextColor={COLORS.placeholderText}
-                  value={qty}
-                  onChangeText={setQty}
+                  style={{
+                    flex: 1,
+                    paddingVertical: 8,
+                    paddingHorizontal: 16,
+                    backgroundColor: COLORS.inputBackground,
+                    borderRadius: 12,
+                    marginRight: 5,
+                    textAlign: "center",
+                    borderWidth: 1,
+                    borderColor: COLORS.border,
+                  }}
                   keyboardType="numeric"
+                  value={String(qty)}
+                  onChangeText={(text) => setQty(Number(text) || 0)}
                 />
+
+                {/* Tombol + */}
+                <TouchableOpacity
+                  onPress={increment}
+                  style={{
+                    paddingVertical: 5,
+                    paddingHorizontal: 12,
+                    backgroundColor: COLORS.inputBackground,
+                    marginRight: 5,
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderColor: COLORS.border,
+                  }}
+                >
+                  <Text style={{ fontSize: 18 }}>+</Text>
+                </TouchableOpacity>
+
+                {/* Dropdown Unit */}
+                <TouchableOpacity
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    paddingVertical: 8,
+                    paddingHorizontal: 16,
+                    backgroundColor: COLORS.inputBackground,
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderColor: COLORS.border,
+                  }}
+                  onPress={() => setModalUnit(true)}
+                >
+                  <Text style={{ marginRight: 6 }}>{unit || "Satuan"}</Text>
+                  <Ionicons name="chevron-down" size={16} color="#333" />
+                </TouchableOpacity>
+                <Modal visible={modalUnit} transparent animationType="fade">
+                <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.3)" }}>
+                  <View
+                    style={{
+                      height: "50%", // setengah layar
+                      backgroundColor: "#fff",
+                      borderTopLeftRadius: 16,
+                      borderTopRightRadius: 16,
+                      padding: 20,
+                    }}
+                  >
+                    <TextInput
+                      placeholder="Cari..."
+                      value={search}
+                      onChangeText={setSearch}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "#ccc",
+                        padding: 10,
+                        borderRadius: 6,
+                        marginBottom: 10,
+                      }}
+                    />
+
+                    <FlatList
+                      data={dataunit}
+                      keyExtractor={(item, index) => index.toString()}
+                      renderItem={({ item }) => (
+                        <TouchableOpacity
+                          onPress={() => {
+                            setUnit(item);
+                            setModalUnit(false);
+                            setSearch("");
+                          }}
+                          style={{
+                            padding: 12,
+                            borderBottomWidth: 1,
+                            borderBottomColor: "#eee",
+                          }}
+                        >
+                          <Text>{item}</Text>
+                        </TouchableOpacity>
+                      )}
+                    />
+
+                    <TouchableOpacity
+                      onPress={() => setModalUnit(false)}
+                      style={{
+                        marginTop: 10,
+                        padding: 12,
+                        backgroundColor: "tomato",
+                        borderRadius: 6,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={{ color: "#fff" }}>Tutup</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Modal>
               </View>
             </View>
 
@@ -165,7 +414,7 @@ export default function Count() {
               <Text style={styles.label}>Notes</Text>
               <TextInput
                 style={styles.textArea}
-                placeholder="Etc: Dus Hampir Rusak!"
+                placeholder="Etc: Masukkan notes!"
                 placeholderTextColor={COLORS.placeholderText}
                 value={notes}
                 onChangeText={setNotes}
@@ -176,9 +425,9 @@ export default function Count() {
             <TouchableOpacity
               style={[styles.button, { backgroundColor: "green" }]}
               onPress={handleSubmit}
-              disabled={loading}
+              disabled={isLoading}
             >
-              {loading ? (
+              {isLoading ? (
                 <ActivityIndicator color={COLORS.white} />
               ) : (
                 <>

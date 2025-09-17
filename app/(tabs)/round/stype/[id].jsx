@@ -28,7 +28,7 @@ export default function Detail() {
     };
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ title: id,
+      <Stack.Screen options={{ title: id+` - Round `+ round,
         headerRight: () => (
           <Pressable
             onPress={() => router.push({

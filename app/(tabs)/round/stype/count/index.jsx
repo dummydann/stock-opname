@@ -25,6 +25,7 @@ export default function Count() {
     fetchPidWm,
     pidWm,
     storeByFormWm,
+    isLoading
   } = useKladStore();
   const [storageBin, setStorageBin] = useState("");
   const [storageUnit, setStorageUnit] = useState("");
@@ -33,7 +34,6 @@ export default function Count() {
   const [qty, setQty] = useState(0);
   const [notes, setNotes] = useState("");
   const [unit, setUnit] = useState("");
-  const [loading, setLoading] = useState(false);
   const [modalStorageBin, setModalStorageBin] = useState(false);
   const [modalStorageUnit, setModalStorageUnit] = useState(false);
   const [modalMaterial, setModalMaterial] = useState(false);
@@ -43,7 +43,6 @@ export default function Count() {
 
   useEffect(() => {
     fetchPidWm(code, check_category);
-    // fetchWmByStype(code);
   }, []);
 
   // Storage Bin → kalau user sudah pilih material / unit / batch, filter ikut nyusut
@@ -53,7 +52,7 @@ const datastorageBin = [
       .filter(item => (storageUnit ? item.storage_unit === storageUnit : true))
       .filter(item => (material.id ? item.materials.id === material : true))
       .filter(item => (batch ? item.batch === batch : true))
-      .map(item => item.storage_bin)
+      .map(item => item.storage_bin).filter(bin => bin?.toLowerCase().includes(search.toLowerCase()))
   ),
 ] ?? [];
 
@@ -64,7 +63,7 @@ const datastorageUnit = [
       .filter(item => (storageBin ? item.storage_bin === storageBin : true))
       .filter(item => (material.id ? item.materials.id === material.id : true))
       .filter(item => (batch ? item.batch === batch : true))
-      .map(item => item.storage_unit)
+      .map(item => item.storage_unit).filter(unit => unit?.toLowerCase().includes(search.toLowerCase()))
   ),
 ] ?? [];
 
@@ -74,7 +73,8 @@ const datamaterial = pidWm
   .filter(item => (storageUnit ? item.storage_unit === storageUnit : true))
   .filter(item => (batch ? item.batch === batch : true))
   .map(item => item.materials)
-  .filter((v, i, arr) => arr.findIndex(x => x.id === v.id) === i);
+  .filter((v, i, arr) => arr.findIndex(x => x.id === v.id) === i)
+  .filter(item => item.desc?.toLowerCase().includes(search.toLowerCase()))
 
 // Batch
 const databatch = [
@@ -83,7 +83,7 @@ const databatch = [
       .filter(item => (storageBin ? item.storage_bin === storageBin : true))
       .filter(item => (storageUnit ? item.storage_unit === storageUnit : true))
       .filter(item => (material.id ? item.materials.id === material.id : true))
-      .map(item => item.batch)
+      .map(item => item.batch).filter(batch => batch?.toLowerCase().includes(search.toLowerCase()))
   ),
 ];
 
@@ -111,12 +111,14 @@ const dataunit = material
       return;
     } else {
       const data = {
+        check_category: check_category,
+        storage_type: code,
         storage_bin: storageBin,
         storage_unit_number: storageUnit,
-        material: material.material,
+        material: material.id,
         batch: batch,
         qty: qty,
-        unit: unit,
+        satuan: unit,
         notes: notes,
       };
       const result = await storeByFormWm(data);
@@ -608,9 +610,9 @@ const dataunit = material
             <TouchableOpacity
               style={[styles.button, { backgroundColor: "green" }]}
               onPress={handleSubmit}
-              disabled={loading}
+              disabled={isLoading}
             >
-              {loading ? (
+              {isLoading ? (
                 <ActivityIndicator color={COLORS.white} />
               ) : (
                 <>

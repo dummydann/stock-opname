@@ -17,6 +17,7 @@ export default function Detail() {
       storage_location: id,
       check_category: round
     }
+  
     useEffect(()=> {
       getKladMm(data)
     },[])
@@ -29,12 +30,12 @@ export default function Detail() {
       };
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ title: id,
+      <Stack.Screen options={{ title: id+` - Round `+round,
           headerRight: () => (
             <Pressable
               onPress={() => router.push({
                 pathname: "round/sloc/count",
-                params: { code: id }, // 👈 lempar parameter
+                params: { code: id, check_category: round }, // 👈 lempar parameter
               })} // arahkan ke halaman tambah data
               style={{ marginRight: 15 }}
             >

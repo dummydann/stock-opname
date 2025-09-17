@@ -8,16 +8,19 @@ export default function MaterialCard({item}) {
      <View style={styles.bookItem}>
       <View style={styles.bookInfo}>
         <Text style={styles.bookTitle}>{item.pid.material_id} - {item.pid.material.desc_material}</Text>
-        <Text style={styles.bookCaption} numberOfLines={2}>
+        <Text style={styles.bookCaption} numberOfLines={1}>
+          PID: {item.pid.pid_number}
+        </Text>
+        <Text style={styles.bookCaption} numberOfLines={1}>
           Storage Bin: {item.pid.storage_bin}
         </Text>
-        <Text style={styles.bookCaption} numberOfLines={2}>
+        <Text style={styles.bookCaption} numberOfLines={1}>
           Batch: {item.pid.batch}
         </Text>
-        <Text style={styles.bookCaption} numberOfLines={2}>
+        <Text style={styles.bookCaption} numberOfLines={1}>
           Qty Count: {item.qty}
         </Text>
-        <Text style={styles.bookCaption} numberOfLines={2}>
+        <Text style={styles.bookCaption} numberOfLines={1}>
           Status:{" "}
           <Text
             style={{
