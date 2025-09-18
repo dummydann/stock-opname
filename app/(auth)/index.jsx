@@ -1,9 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Link } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Text,
@@ -37,14 +37,16 @@ export default function Login() {
     >
       <View style={styles.container}>
         <View style={styles.topIllustration}>
-          <Text style={[styles.title, { marginBottom: 50 }]}>Stock Opname</Text>
-          {/* <Image
-            source={require("../../assets/images/i.png")}
+          <Image
+            source={require("../../assets/images/logo_stockopname.png")}
             style={styles.illustrationImage}
             resizeMode="contain"
-          /> */}
+          />
         </View>
         <View style={styles.card}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Stock Opname</Text>
+          </View>
           <View style={styles.formContainer}>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Email</Text>
@@ -106,14 +108,14 @@ export default function Login() {
                 <Text style={styles.buttonText}>Login</Text>
               )}
             </TouchableOpacity>
-            <View style={styles.footer}>
+            {/* <View style={styles.footer}>
               <Text style={styles.footerText}>Don't have an account?</Text>
               <Link href="/signup" asChild>
                 <TouchableOpacity>
                   <Text style={styles.link}>Sign Up</Text>
                 </TouchableOpacity>
               </Link>
-            </View>
+            </View> */}
           </View>
         </View>
       </View>

@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -15,12 +15,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import styles from "../../../../../assets/styles/create.styles";
-import COLORS from "../../../../../constants/colors";
-import { useKladStore } from "../../../../../store/kladStore";
+import styles from "../../../../../../../../../assets/styles/create.styles";
+import COLORS from "../../../../../../../../../constants/colors";
+import { useKladStore } from "../../../../../../../../../store/kladStore";
 
-export default function Count() {
-  const { code, check_category } = useLocalSearchParams();
+export default function KladCreate() {
+  const { roundId, stypeId } = useLocalSearchParams();
   const {
     fetchPidWm,
     pidWm,
@@ -42,7 +42,7 @@ export default function Count() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetchPidWm(code, check_category);
+    fetchPidWm(stypeId, roundId);
   }, []);
 
   // Storage Bin → kalau user sudah pilih material / unit / batch, filter ikut nyusut
@@ -111,8 +111,8 @@ const dataunit = material
       return;
     } else {
       const data = {
-        check_category: check_category,
-        storage_type: code,
+        check_category: roundId,
+        storage_type: stypeId,
         storage_bin: storageBin,
         storage_unit_number: storageUnit,
         material: material.id,
@@ -128,6 +128,13 @@ const dataunit = material
         var textAlert = "Error";
       }
       Alert.alert(textAlert, result.message);
+      setStorageBin("")
+      setStorageUnit("")
+      setMaterial("")
+      setBatch("")
+      setQty(0)
+      setUnit("")
+      setNotes("")
     }
   };
 
@@ -136,6 +143,7 @@ const dataunit = material
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
+      <Stack.Screen options={{title: 'Count'}} />
       <ScrollView
         contentContainerStyle={styles.container}
         style={styles.scrollViewStyle}
@@ -143,7 +151,7 @@ const dataunit = material
         <View style={styles.card}>
           {/* HEADER */}
           <View style={styles.header}>
-            <Text style={styles.title}>Storage Type = {code}</Text>
+            <Text style={styles.title}>Storage Type = {stypeId}</Text>
             {/* <Text style={styles.subtitle}>Share your favorite reads with others</Text> */}
           </View>
 

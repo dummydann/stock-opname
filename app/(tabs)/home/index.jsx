@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { FlatList, Text, View } from "react-native";
-import { types } from '../../assets/json/dummy';
-import styles from "../../assets/styles/home.styles";
-import CategoryCard from '../../components/CategoryCard';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { types } from '../../../assets/json/dummy';
+import styles from "../../../assets/styles/home.styles";
+import HomeCard from "../../../components/HomeCard";
 
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -11,6 +12,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const insets = useSafeAreaInsets();
 
   const fetchBooks = async (pageNum = 1, refresh = false) => {
     try {
@@ -54,10 +56,10 @@ export default function Home() {
   //   fetchBooks();
   // }, []);
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {paddingTop: insets.top}]}>
       <FlatList
         data={types}
-        renderItem={({item}) => <CategoryCard item={item}/>}
+        renderItem={({item}) => <HomeCard item={item}/>}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={

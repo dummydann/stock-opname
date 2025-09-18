@@ -20,8 +20,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   illustrationImage: {
-    width: width * 0.75,
-    height: width * 0.75,
+    width: width * 0.50,
+    height: width * 0.50,
   },
   card: {
     backgroundColor: COLORS.cardBackground,
@@ -41,10 +41,10 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   title: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: "700",
     color: COLORS.textPrimary,
-    marginBottom: 8,
+    marginBottom: 1,
   },
   subtitle: {
     fontSize: 16,

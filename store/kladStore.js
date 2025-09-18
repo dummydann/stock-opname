@@ -149,6 +149,7 @@ export const useKladStore = create((set) => ({
   },
   getKladWm: async (item) => {
     try {
+      set({isLoading: true})
       const token = await AsyncStorage.getItem("token");
       const query = new URLSearchParams(item).toString();
       const response = await fetch(
@@ -162,7 +163,7 @@ export const useKladStore = create((set) => ({
         }
       );
       const data = await response.json();
-      set({kladWm: data})
+      set({kladWm: data, isLoading: false})
     } catch (error) {
       console.log(error);
     }

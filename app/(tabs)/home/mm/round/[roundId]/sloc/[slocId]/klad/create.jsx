@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -16,12 +16,13 @@ import {
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
-import styles from "../../../../../assets/styles/create.styles";
-import COLORS from "../../../../../constants/colors";
-import { useKladStore } from "../../../../../store/kladStore";
+import styles from "../../../../../../../../../assets/styles/create.styles";
+import COLORS from "../../../../../../../../../constants/colors";
+import { useKladStore } from "../../../../../../../../../store/kladStore";
 
-export default function Count() {
-  const { code, check_category } = useLocalSearchParams();
+export default function KladCreate() {
+  const { roundId, slocId } = useLocalSearchParams();
+  
   const { fetchPidMm, pidMm, storeByFormMm, isLoading } = useKladStore();
   const [material, setMaterial] = useState("");
   const [batch, setBatch] = useState("");
@@ -35,7 +36,7 @@ export default function Count() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetchPidMm(code, check_category);
+    fetchPidMm(slocId, roundId);
   }, []);
 
   const datamaterial = [
@@ -78,8 +79,8 @@ export default function Count() {
       return;
     } else {
       const data = {
-        check_category: check_category,
-        sloc: code,
+        check_category: roundId,
+        sloc: slocId,
         material: material,
         batch: batch,
         qty: qty,
@@ -96,7 +97,7 @@ export default function Count() {
     }
     setMaterial('');
     setBatch('');
-    setQty('');
+    setQty(0);
     setNotes('');
   };
   return (
@@ -104,6 +105,7 @@ export default function Count() {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
+      <Stack.Screen options={{title: 'Count'}} />
       <ScrollView
         contentContainerStyle={styles.container}
         style={styles.scrollViewStyle}
@@ -111,7 +113,7 @@ export default function Count() {
         <View style={styles.card}>
           {/* HEADER */}
           <View style={styles.header}>
-            <Text style={styles.title}>Storage Location = {code}</Text>
+            <Text style={styles.title}>Storage Location = {slocId}</Text>
             {/* <Text style={styles.subtitle}>Share your favorite reads with others</Text> */}
           </View>
 

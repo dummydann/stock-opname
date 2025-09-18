@@ -1,19 +1,19 @@
 import { Ionicons } from '@expo/vector-icons'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import { FlatList, Text, View } from 'react-native'
-import { dataRound } from '../../../assets/json/dummy'
-import styles from '../../../assets/styles/profile.styles'
-import RoundCard from '../../../components/RoundCard'
-import COLORS from '../../../constants/colors'
+import { dataRound } from '../../../../../assets/json/dummy'
+import styles from '../../../../../assets/styles/profile.styles'
+import RoundCard from '../../../../../components/RoundsCard'
+import COLORS from '../../../../../constants/colors'
 
-export default function round() {
-  const {code, name} = useLocalSearchParams();
+export default function Round() {
+  const {param, type} = useLocalSearchParams();
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{title: name}} />
+      <Stack.Screen options={{ title: 'Pilih Round - '+type.toUpperCase() }} />
       <FlatList
         data={dataRound}
-        renderItem={({item}) => <RoundCard item={item} code={code}/>}
+        renderItem={({item}) => <RoundCard item={item} type={type} param={param} />}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.booksList}
         // refreshControl={

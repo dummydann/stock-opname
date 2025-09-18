@@ -26,7 +26,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="home/index"
         options={{
           title: "Home",
           tabBarIcon: ({ color, size }) => (
@@ -35,37 +35,21 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="create"
-        options={{
-          // title: "Create",
-          href: null,
-          // tabBarIcon: ({ color, size }) => (
-          //   <Ionicons name="add-circle-outline" size={size} color={color} />
-          // ),
-        }}
-      />
-      {/* <Tabs.Screen
-        name="sloc"
-        options={{
-          // title: 'Create',
-          href: null,
-          // tabBarIcon: ({color, size}) => (<Ionicons name='add-circle-outline' size={size} color={color} />)
-        }}
-      />
-      <Tabs.Screen
-        name="stype"
-        options={{
-          // title: 'Create',
-          href: null,
-          // tabBarIcon: ({color, size}) => (<Ionicons name='add-circle-outline' size={size} color={color} />)
-        }}
-      /> */}
-      <Tabs.Screen
         name="round"
         options={{
-          // title: 'Create',
-          href: null,
-          // tabBarIcon: ({color, size}) => (<Ionicons name='add-circle-outline' size={size} color={color} />)
+          href: null
+        }}
+      />
+      <Tabs.Screen
+        name="home/wm/round"
+        options={{
+          href: null
+        }}
+      />
+       <Tabs.Screen
+        name="home/mm/round"
+        options={{
+          href: null
         }}
       />
       <Tabs.Screen

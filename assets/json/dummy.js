@@ -3,8 +3,8 @@ import ImageWarehouses from "../images/warehouses.jpg";
 
 // Dummy untuk types
 const types = [
-  { id: 1, name: "Warehouses Management", picture: ImageWarehouses, route: 'stype' },
-  { id: 2, name: "Materials Management", picture: ImageMaterials, route: 'sloc' },
+  { id: 1, name: "Warehouses Management", picture: ImageWarehouses, param: 'stype', type: "wm" },
+  { id: 2, name: "Materials Management", picture: ImageMaterials, param: 'sloc', type: "mm" },
 ];
 
 const dataRound = [
