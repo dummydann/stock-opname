@@ -19,7 +19,7 @@ export default function HomeCard({ item }) {
 
         <View style={styles.bookDetails}>
           <Text style={styles.bookTitle}>{item.name}</Text>
-          <Text style={styles.caption}>{item.name}</Text>
+          {/* <Text style={styles.caption}>{item.name}</Text> */}
         </View>
       </Pressable>
     </Link>

@@ -1,9 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { FlatList, RefreshControl, Text, TextInput, View } from 'react-native';
+import { FlatList, RefreshControl, Text, View } from 'react-native';
 import { sleep } from '../../../..';
-import styles2 from '../../../../../../../assets/styles/create.styles';
 import styles from '../../../../../../../assets/styles/home.styles';
 import Loader from '../../../../../../../components/Loader';
 import SlocCard from '../../../../../../../components/SlocsCard';
@@ -31,7 +30,7 @@ export default function Sloc() {
     return (
         <View style={styles.container}>
         <Stack.Screen options={{title: 'Storage Location - Round '+roundId }} />
-        <View style={{
+        {/* <View style={{
             backgroundColor: COLORS.background,
             padding: 16,
             paddingBottom: 0
@@ -51,7 +50,7 @@ export default function Sloc() {
                 // onChangeText={setTitle}
             />
             </View>
-        </View>
+        </View> */}
         <FlatList
             data={storageLocation}
             renderItem={({item}) => <SlocCard item={item} round={roundId}/>}
