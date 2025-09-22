@@ -21,16 +21,12 @@ import { useKladStore } from "../../../../../../../../../store/kladStore";
 
 export default function KladCreate() {
   const { roundId, stypeId } = useLocalSearchParams();
-  const {
-    fetchPidWm,
-    pidWm,
-    storeByFormWm,
-    isLoading
-  } = useKladStore();
+  const { fetchPidWm, pidWm, storeByFormWm, isLoading } = useKladStore();
   const [storageBin, setStorageBin] = useState("");
   const [storageUnit, setStorageUnit] = useState("");
   const [material, setMaterial] = useState([]);
   const [batch, setBatch] = useState("");
+  const [newBatch, setNewBatch] = useState(false);
   const [qty, setQty] = useState(0);
   const [notes, setNotes] = useState("");
   const [unit, setUnit] = useState("");
@@ -46,56 +42,73 @@ export default function KladCreate() {
   }, []);
 
   // Storage Bin → kalau user sudah pilih material / unit / batch, filter ikut nyusut
-const datastorageBin = [
-  ...new Set(
-    pidWm
-      .filter(item => (storageUnit ? item.storage_unit === storageUnit : true))
-      .filter(item => (material.id ? item.materials.id === material : true))
-      .filter(item => (batch ? item.batch === batch : true))
-      .map(item => item.storage_bin).filter(bin => bin?.toLowerCase().includes(search.toLowerCase()))
-  ),
-] ?? [];
-
-// Storage Unit
-const datastorageUnit = [
-  ...new Set(
-    pidWm
-      .filter(item => (storageBin ? item.storage_bin === storageBin : true))
-      .filter(item => (material.id ? item.materials.id === material.id : true))
-      .filter(item => (batch ? item.batch === batch : true))
-      .map(item => item.storage_unit).filter(unit => unit?.toLowerCase().includes(search.toLowerCase()))
-  ),
-] ?? [];
-
-// Material
-const datamaterial = pidWm
-  .filter(item => (storageBin ? item.storage_bin === storageBin : true))
-  .filter(item => (storageUnit ? item.storage_unit === storageUnit : true))
-  .filter(item => (batch ? item.batch === batch : true))
-  .map(item => item.materials)
-  .filter((v, i, arr) => arr.findIndex(x => x.id === v.id) === i)
-  .filter(item => item.desc?.toLowerCase().includes(search.toLowerCase()))
-
-// Batch
-const databatch = [
-  ...new Set(
-    pidWm
-      .filter(item => (storageBin ? item.storage_bin === storageBin : true))
-      .filter(item => (storageUnit ? item.storage_unit === storageUnit : true))
-      .filter(item => (material.id ? item.materials.id === material.id : true))
-      .map(item => item.batch).filter(batch => batch?.toLowerCase().includes(search.toLowerCase()))
-  ),
-];
-
-const dataunit = material
-  ? [
+  const datastorageBin =
+    [
       ...new Set(
         pidWm
-          .filter(item => item.materials.id === material.id)
-          .flatMap(item => item.uoms || [])
+          .filter((item) =>
+            storageUnit ? item.storage_unit === storageUnit : true
+          )
+          .filter((item) =>
+            material.id ? item.materials.id === material : true
+          )
+          .filter((item) => (batch ? item.batch === batch : true))
+          .map((item) => item.storage_bin)
+          .filter((bin) => bin?.toLowerCase().includes(search.toLowerCase()))
       ),
-    ]
-  : [];
+    ] ?? [];
+
+  // Storage Unit
+  const datastorageUnit =
+    [
+      ...new Set(
+        pidWm
+          .filter((item) =>
+            storageBin ? item.storage_bin === storageBin : true
+          )
+          .filter((item) =>
+            material.id ? item.materials.id === material.id : true
+          )
+          .filter((item) => (batch ? item.batch === batch : true))
+          .map((item) => item.storage_unit)
+          .filter((unit) => unit?.toLowerCase().includes(search.toLowerCase()))
+      ),
+    ] ?? [];
+
+  // Material
+  const datamaterial = pidWm
+    .filter((item) => (storageBin ? item.storage_bin === storageBin : true))
+    .filter((item) => (storageUnit ? item.storage_unit === storageUnit : true))
+    .filter((item) => (batch ? item.batch === batch : true))
+    .map((item) => item.materials)
+    .filter((v, i, arr) => arr.findIndex((x) => x.id === v.id) === i)
+    .filter((item) => item.desc?.toLowerCase().includes(search.toLowerCase()));
+
+  // Batch
+  const databatch = [
+    ...new Set(
+      pidWm
+        .filter((item) => (storageBin ? item.storage_bin === storageBin : true))
+        .filter((item) =>
+          storageUnit ? item.storage_unit === storageUnit : true
+        )
+        .filter((item) =>
+          material.id ? item.materials.id === material.id : true
+        )
+        .map((item) => item.batch)
+        .filter((batch) => batch?.toLowerCase().includes(search.toLowerCase()))
+    ),
+  ];
+
+  const dataunit = material
+    ? [
+        ...new Set(
+          pidWm
+            .filter((item) => item.materials.id === material.id)
+            .flatMap((item) => item.uoms || [])
+        ),
+      ]
+    : [];
 
   const increment = () => setQty((prev) => String(Number(prev) + 1));
   const decrement = () => {
@@ -117,6 +130,7 @@ const dataunit = material
         storage_unit_number: storageUnit,
         material: material.id,
         batch: batch,
+        is_new_batch: newBatch,
         qty: qty,
         satuan: unit,
         notes: notes,
@@ -128,13 +142,13 @@ const dataunit = material
         var textAlert = "Error";
       }
       Alert.alert(textAlert, result.message);
-      setStorageBin("")
-      setStorageUnit("")
-      setMaterial("")
-      setBatch("")
-      setQty(0)
-      setUnit("")
-      setNotes("")
+      setStorageBin("");
+      setStorageUnit("");
+      setMaterial("");
+      setBatch("");
+      setQty(0);
+      setUnit("");
+      setNotes("");
     }
   };
 
@@ -143,7 +157,7 @@ const dataunit = material
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <Stack.Screen options={{title: 'Count'}} />
+      <Stack.Screen options={{ title: "Count" }} />
       <ScrollView
         contentContainerStyle={styles.container}
         style={styles.scrollViewStyle}
@@ -175,7 +189,13 @@ const dataunit = material
                 <Text>{storageBin || "Select Storage Bin..."}</Text>
               </TouchableOpacity>
               <Modal visible={modalStorageBin} transparent animationType="fade">
-                <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.3)" }}>
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "flex-end",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                  }}
+                >
                   <View
                     style={{
                       height: "50%", // setengah layar
@@ -218,7 +238,7 @@ const dataunit = material
                         </TouchableOpacity>
                       )}
                     />
-                    
+
                     <TouchableOpacity
                       onPress={() => setModalStorageBin(false)}
                       style={{
@@ -253,8 +273,18 @@ const dataunit = material
               >
                 <Text>{storageUnit || "Select Storage Unit Number..."}</Text>
               </TouchableOpacity>
-              <Modal visible={modalStorageUnit} transparent animationType="fade">
-                <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.3)" }}>
+              <Modal
+                visible={modalStorageUnit}
+                transparent
+                animationType="fade"
+              >
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "flex-end",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                  }}
+                >
                   <View
                     style={{
                       height: "50%", // setengah layar
@@ -333,7 +363,13 @@ const dataunit = material
                 <Text>{material.desc || "Select Material..."}</Text>
               </TouchableOpacity>
               <Modal visible={modalMaterial} transparent animationType="fade">
-                <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.3)" }}>
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "flex-end",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                  }}
+                >
                   <View
                     style={{
                       height: "50%", // setengah layar
@@ -412,7 +448,13 @@ const dataunit = material
                 <Text>{batch || "Select Batch..."}</Text>
               </TouchableOpacity>
               <Modal visible={modalBatch} transparent animationType="fade">
-                <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.3)" }}>
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "flex-end",
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                  }}
+                >
                   <View
                     style={{
                       height: "50%", // setengah layar
@@ -454,6 +496,40 @@ const dataunit = material
                           <Text>{item}</Text>
                         </TouchableOpacity>
                       )}
+                      ListEmptyComponent={
+                        search.trim() !== "" ? (
+                          <View
+                            style={{
+                              paddingVertical: 20,
+                              alignItems: "center",
+                            }}
+                          >
+                            <Text style={{ color: "#888", marginBottom: 30 }}>
+                              Batch tidak ditemukan !
+                            </Text>
+                            <TouchableOpacity
+                              onPress={() => {
+                                setNewBatch(true);
+                                setBatch(search.trim());
+                                setModalBatch(false);
+                                setSearch("");
+                              }}
+                              style={{
+                                backgroundColor: COLORS.primary,
+                                paddingHorizontal: 16,
+                                paddingVertical: 12,
+                                borderRadius: 6,
+                              }}
+                            >
+                              <Text
+                                style={{ color: "#fff", fontWeight: "bold" }}
+                              >
+                                Tambahkan "{search}" sebagai batch baru
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
+                        ) : null
+                      }
                     />
 
                     <TouchableOpacity
@@ -543,65 +619,71 @@ const dataunit = material
                   <Ionicons name="chevron-down" size={16} color="#333" />
                 </TouchableOpacity>
                 <Modal visible={modalUnit} transparent animationType="fade">
-                <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.3)" }}>
                   <View
                     style={{
-                      height: "50%", // setengah layar
-                      backgroundColor: "#fff",
-                      borderTopLeftRadius: 16,
-                      borderTopRightRadius: 16,
-                      padding: 20,
+                      flex: 1,
+                      justifyContent: "flex-end",
+                      backgroundColor: "rgba(0,0,0,0.3)",
                     }}
                   >
-                    <TextInput
-                      placeholder="Cari..."
-                      value={search}
-                      onChangeText={setSearch}
+                    <View
                       style={{
-                        borderWidth: 1,
-                        borderColor: "#ccc",
-                        padding: 10,
-                        borderRadius: 6,
-                        marginBottom: 10,
-                      }}
-                    />
-
-                    <FlatList
-                      data={dataunit}
-                      keyExtractor={(item, index) => index.toString()}
-                      renderItem={({ item }) => (
-                        <TouchableOpacity
-                          onPress={() => {
-                            setUnit(item);
-                            setModalUnit(false);
-                            setSearch("");
-                          }}
-                          style={{
-                            padding: 12,
-                            borderBottomWidth: 1,
-                            borderBottomColor: "#eee",
-                          }}
-                        >
-                          <Text>{item}</Text>
-                        </TouchableOpacity>
-                      )}
-                    />
-
-                    <TouchableOpacity
-                      onPress={() => setModalUnit(false)}
-                      style={{
-                        marginTop: 10,
-                        padding: 12,
-                        backgroundColor: "tomato",
-                        borderRadius: 6,
-                        alignItems: "center",
+                        height: "50%", // setengah layar
+                        backgroundColor: "#fff",
+                        borderTopLeftRadius: 16,
+                        borderTopRightRadius: 16,
+                        padding: 20,
                       }}
                     >
-                      <Text style={{ color: "#fff" }}>Tutup</Text>
-                    </TouchableOpacity>
+                      <TextInput
+                        placeholder="Cari..."
+                        value={search}
+                        onChangeText={setSearch}
+                        style={{
+                          borderWidth: 1,
+                          borderColor: "#ccc",
+                          padding: 10,
+                          borderRadius: 6,
+                          marginBottom: 10,
+                        }}
+                      />
+
+                      <FlatList
+                        data={dataunit}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={({ item }) => (
+                          <TouchableOpacity
+                            onPress={() => {
+                              setUnit(item);
+                              setModalUnit(false);
+                              setSearch("");
+                            }}
+                            style={{
+                              padding: 12,
+                              borderBottomWidth: 1,
+                              borderBottomColor: "#eee",
+                            }}
+                          >
+                            <Text>{item}</Text>
+                          </TouchableOpacity>
+                        )}
+                      />
+
+                      <TouchableOpacity
+                        onPress={() => setModalUnit(false)}
+                        style={{
+                          marginTop: 10,
+                          padding: 12,
+                          backgroundColor: "tomato",
+                          borderRadius: 6,
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text style={{ color: "#fff" }}>Tutup</Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
-              </Modal>
+                </Modal>
               </View>
             </View>
             <View style={styles.formGroup}>

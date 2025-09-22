@@ -13,7 +13,7 @@ export const useKladStore = create((set) => ({
   error: null,
   fetchStorageType: async (round) => {
     try {
-      set({isLoading: true})
+      set({ isLoading: true });
       const token = await AsyncStorage.getItem("token");
       const response = await fetch(
         `https://stock-opname.devkftd.my.id/api/pid-wm/stype?check_category=${round}`,
@@ -26,17 +26,18 @@ export const useKladStore = create((set) => ({
         }
       );
       const result = await response.json();
-      if (!response.ok) throw new Error(result.message || "Failed to fetch Storage Type");
-      set({storageType: result.data, isLoading: false});
+      if (!response.ok)
+        throw new Error(result.message || "Failed to fetch Storage Type");
+      set({ storageType: result.data, isLoading: false });
     } catch (error) {
-      set({isLoading: true})
+      set({ isLoading: true });
       Alert.alert("Error", "Failed to load storage type.");
-      set({isLoading: false})
+      set({ isLoading: false });
     }
   },
   fetchStorageLocation: async (round) => {
     try {
-      set({isLoading: true})
+      set({ isLoading: true });
       const token = await AsyncStorage.getItem("token");
       const response = await fetch(
         `https://stock-opname.devkftd.my.id/api/pid-mm/sloc?check_category=${round}`,
@@ -49,12 +50,13 @@ export const useKladStore = create((set) => ({
         }
       );
       const result = await response.json();
-      if (!response.ok) throw new Error(result.message || "Failed to fetch Storage Type");
-      set({storageLocation: result.data, isLoading: false});
+      if (!response.ok)
+        throw new Error(result.message || "Failed to fetch Storage Type");
+      set({ storageLocation: result.data, isLoading: false });
     } catch (error) {
-      set({isLoading: true})
+      set({ isLoading: true });
       Alert.alert("Error", "Failed to load storage type.");
-      set({isLoading: false})
+      set({ isLoading: false });
     }
   },
   fetchPidWm: async (code, round) => {
@@ -71,8 +73,9 @@ export const useKladStore = create((set) => ({
         }
       );
       const result = await response.json();
-      if (!response.ok) throw new Error(result.message || "Failed to fetch PID WM");
-      set({pidWm: result.data, isLoading: false});
+      if (!response.ok)
+        throw new Error(result.message || "Failed to fetch PID WM");
+      set({ pidWm: result.data, isLoading: false });
     } catch (error) {
       console.log(error);
     }
@@ -91,15 +94,16 @@ export const useKladStore = create((set) => ({
         }
       );
       const result = await response.json();
-      if (!response.ok) throw new Error(result.message || "Failed to fetch PID MM");
-      set({pidMm: result.data, isLoading: false});
+      if (!response.ok)
+        throw new Error(result.message || "Failed to fetch PID MM");
+      set({ pidMm: result.data, isLoading: false });
     } catch (error) {
       console.log(error);
     }
   },
   storeByFormWm: async (item) => {
     try {
-      set({isLoading: true})
+      set({ isLoading: true });
       const token = await AsyncStorage.getItem("token");
       const response = await fetch(
         `https://stock-opname.devkftd.my.id/api/klad-wm-form`,
@@ -123,7 +127,7 @@ export const useKladStore = create((set) => ({
   },
   storeByFormMm: async (item) => {
     try {
-      set({isLoading: true})
+      set({ isLoading: true });
       const token = await AsyncStorage.getItem("token");
       const response = await fetch(
         `https://stock-opname.devkftd.my.id/api/klad-mm-form`,
@@ -139,7 +143,7 @@ export const useKladStore = create((set) => ({
       );
       const data = await response.json();
       console.log(data);
-      
+
       if (!response.ok) throw new Error(data.message || "Something went wrong");
       set({ isLoading: false });
       return { success: data.success, message: data.message };
@@ -149,7 +153,7 @@ export const useKladStore = create((set) => ({
   },
   getKladWm: async (item) => {
     try {
-      set({isLoading: true})
+      set({ isLoading: true });
       const token = await AsyncStorage.getItem("token");
       const query = new URLSearchParams(item).toString();
       const response = await fetch(
@@ -163,7 +167,7 @@ export const useKladStore = create((set) => ({
         }
       );
       const data = await response.json();
-      set({kladWm: data, isLoading: false})
+      set({ kladWm: data, isLoading: false });
     } catch (error) {
       console.log(error);
     }
@@ -183,7 +187,7 @@ export const useKladStore = create((set) => ({
         }
       );
       const data = await response.json();
-      set({kladMm: data})
+      set({ kladMm: data });
     } catch (error) {
       console.log(error);
     }
