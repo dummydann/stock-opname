@@ -29,7 +29,7 @@ export default function MaterialCard({item}) {
                   : "red",    // negatif
             }}
           >
-           {item.status == 'equal' ? "Equal" : item.status == 'negatif' ? "Selisih" : "Selisih Positif"}
+           {item.status == 'equal' ? "Equal" : "Selisih"}
           </Text>
         </Text>
         <Text style={styles.bookDate}>{new Date(item.created_at).toLocaleDateString()}</Text>

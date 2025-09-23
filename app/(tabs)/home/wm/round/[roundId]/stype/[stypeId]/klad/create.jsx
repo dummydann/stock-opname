@@ -3,7 +3,6 @@ import { Stack, useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   KeyboardAvoidingView,
   Modal,
@@ -13,7 +12,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import styles from "../../../../../../../../../assets/styles/create.styles";
 import COLORS from "../../../../../../../../../constants/colors";
@@ -37,6 +36,10 @@ export default function KladCreate() {
   const [modalUnit, setModalUnit] = useState(false);
   const [search, setSearch] = useState("");
   const [successModal, setSuccessModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [warningModal, setWarningModal] = useState(false);
+  const [warningMessage, setWarningMessage] = useState("");
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -122,7 +125,8 @@ export default function KladCreate() {
 
   const handleSubmit = async () => {
     if (!storageBin || !storageUnit || !material || !batch || !qty || !unit) {
-      Alert.alert("Error", "Please fill in all fields");
+        setWarningMessage('Harap isi semua field terlebih dahulu!');
+        setWarningModal(true)
       return;
     } else {
       const data = {
@@ -138,10 +142,13 @@ export default function KladCreate() {
         notes: notes,
       };
       const result = await storeByFormWm(data);
+      console.log(result);
+      
       if (result.success) {
         setSuccessModal(true); // tampilkan modal
       } else {
-        Alert.alert("Error", result.message);
+        setErrorMessage(result.message);
+        setErrorModal(true)
       }
       setStorageBin("");
       setStorageUnit("");
@@ -779,6 +786,162 @@ export default function KladCreate() {
                   style={{
                     marginTop: 25,
                     backgroundColor: "#4CAF50",
+                    paddingVertical: 12,
+                    paddingHorizontal: 40,
+                    borderRadius: 12,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.15,
+                    shadowRadius: 3,
+                    elevation: 5,
+                  }}
+                >
+                  <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
+                    OK
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        </View>
+        <View>
+          <Modal visible={errorModal} transparent animationType="fade">
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "rgba(0,0,0,0.5)",
+                padding: 20,
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: "white",
+                  padding: 25,
+                  borderRadius: 20,
+                  alignItems: "center",
+                  width: "85%",
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 6,
+                  elevation: 8,
+                }}
+              >
+                {/* Icon di lingkaran */}
+                <View
+                  style={{
+                    backgroundColor: "#E8F5E9",
+                    borderRadius: 60,
+                    padding: 12,
+                    marginBottom: 15,
+                  }}
+                >
+                  <Ionicons name="alert-circle" size={80} color="red" />
+                </View>
+
+                {/* Judul */}
+                <Text style={{ fontSize: 20, fontWeight: "bold", color: "#333" }}>
+                  Error!
+                </Text>
+
+                {/* Deskripsi */}
+                <Text
+                  style={{
+                    color: "#666",
+                    marginTop: 8,
+                    fontSize: 15,
+                    textAlign: "center",
+                  }}
+                >
+                  {errorMessage}
+                </Text>
+
+                {/* Tombol OK */}
+                <TouchableOpacity
+                  onPress={() => {setErrorModal(false); navigation.goBack(); }}
+                  style={{
+                    marginTop: 25,
+                    backgroundColor: "red",
+                    paddingVertical: 12,
+                    paddingHorizontal: 40,
+                    borderRadius: 12,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.15,
+                    shadowRadius: 3,
+                    elevation: 5,
+                  }}
+                >
+                  <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
+                    OK
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        </View>
+        <View>
+          <Modal visible={warningModal} transparent animationType="fade">
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "rgba(0,0,0,0.5)",
+                padding: 20,
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: "white",
+                  padding: 25,
+                  borderRadius: 20,
+                  alignItems: "center",
+                  width: "85%",
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 6,
+                  elevation: 8,
+                }}
+              >
+                {/* Icon di lingkaran */}
+                <View
+                  style={{
+                    backgroundColor: "#E8F5E9",
+                    borderRadius: 60,
+                    padding: 12,
+                    marginBottom: 15,
+                  }}
+                >
+                  <Ionicons name="alert-circle" size={80} color="#cc3300" />
+                </View>
+
+                {/* Judul */}
+                <Text style={{ fontSize: 20, fontWeight: "bold", color: "#333" }}>
+                  Warning
+                </Text>
+
+                {/* Deskripsi */}
+                <Text
+                  style={{
+                    color: "#666",
+                    marginTop: 8,
+                    fontSize: 15,
+                    textAlign: "center",
+                  }}
+                >
+                  {warningMessage}
+                </Text>
+
+                {/* Tombol OK */}
+                <TouchableOpacity
+                  onPress={() => { setWarningModal(false) }}
+                  style={{
+                    marginTop: 25,
+                    backgroundColor: "#cc3300",
                     paddingVertical: 12,
                     paddingHorizontal: 40,
                     borderRadius: 12,

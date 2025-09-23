@@ -35,6 +35,8 @@ export default function KladCreate() {
   const [modalUnit, setModalUnit] = useState(false);
   const [search, setSearch] = useState("");
   const [successModal, setSuccessModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -93,7 +95,8 @@ export default function KladCreate() {
       if (result.success) {
         setSuccessModal(true); // tampilkan modal
       } else {
-        Alert.alert("Error", result.message);
+        setErrorMessage(result.meessage);
+        setErrorModal(true)
       }
     }
     setMaterial('');
@@ -503,6 +506,84 @@ export default function KladCreate() {
                 {/* Tombol OK */}
                 <TouchableOpacity
                   onPress={() => {setSuccessModal(false); navigation.goBack(); }}
+                  style={{
+                    marginTop: 25,
+                    backgroundColor: "#4CAF50",
+                    paddingVertical: 12,
+                    paddingHorizontal: 40,
+                    borderRadius: 12,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.15,
+                    shadowRadius: 3,
+                    elevation: 5,
+                  }}
+                >
+                  <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
+                    OK
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        </View>
+        <View>
+          <Modal visible={errorModal} transparent animationType="fade">
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "rgba(0,0,0,0.5)",
+                padding: 20,
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: "white",
+                  padding: 25,
+                  borderRadius: 20,
+                  alignItems: "center",
+                  width: "85%",
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 6,
+                  elevation: 8,
+                }}
+              >
+                {/* Icon di lingkaran */}
+                <View
+                  style={{
+                    backgroundColor: "#E8F5E9",
+                    borderRadius: 60,
+                    padding: 12,
+                    marginBottom: 15,
+                  }}
+                >
+                  <Ionicons name="checkmark-circle" size={80} color="#4CAF50" />
+                </View>
+
+                {/* Judul */}
+                <Text style={{ fontSize: 20, fontWeight: "bold", color: "#333" }}>
+                  Success!
+                </Text>
+
+                {/* Deskripsi */}
+                <Text
+                  style={{
+                    color: "#666",
+                    marginTop: 8,
+                    fontSize: 15,
+                    textAlign: "center",
+                  }}
+                >
+                  {errorMessage}
+                </Text>
+
+                {/* Tombol OK */}
+                <TouchableOpacity
+                  onPress={() => {setErrorModal(false); navigation.goBack(); }}
                   style={{
                     marginTop: 25,
                     backgroundColor: "#4CAF50",

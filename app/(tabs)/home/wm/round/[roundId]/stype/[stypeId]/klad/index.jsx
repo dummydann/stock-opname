@@ -226,7 +226,7 @@ export default function index() {
                   }}
                   onPress={() => {
                     setModal(false);
-                    router.push(`/home/wm/round/${roundId}/stype/${stypeId}/klad/klad`)
+                    router.push(`/home/wm/round/${roundId}/stype/${stypeId}/klad/create`)
                   }}
                 >
                   <Ionicons name="documents-outline" size={22} color="#2563eb" />
