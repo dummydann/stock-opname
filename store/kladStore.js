@@ -101,6 +101,48 @@ export const useKladStore = create((set) => ({
       console.log(error);
     }
   },
+  fetchPidWmNew: async (code, round) => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const response = await fetch(
+        `https://stock-opname.devkftd.my.id/api/new-pid-wm?code=${code}&check_category=${round}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const result = await response.json();
+      if (!response.ok)
+        throw new Error(result.message || "Failed to fetch PID WM");
+      set({ pidWm: result.data, isLoading: false });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  fetchPidMmNew: async (code, round) => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const response = await fetch(
+        `https://stock-opname.devkftd.my.id/api/new-pid-mm?code=${code}&check_category=${round}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const result = await response.json();
+      if (!response.ok)
+        throw new Error(result.message || "Failed to fetch PID MM");
+      set({ pidMm: result.data, isLoading: false });
+    } catch (error) {
+      console.log(error);
+    }
+  },
   storeByFormWm: async (item) => {
     try {
       set({ isLoading: true });
@@ -144,6 +186,55 @@ export const useKladStore = create((set) => ({
       const data = await response.json();
       console.log(data);
 
+      if (!response.ok) throw new Error(data.message || "Something went wrong");
+      set({ isLoading: false });
+      return { success: data.success, message: data.message };
+    } catch (error) {
+      set({ error: error });
+    }
+  },
+  storeByFormWmNew: async (item) => {
+    try {
+      set({ isLoading: true });
+      const token = await AsyncStorage.getItem("token");
+      const response = await fetch(
+        `https://stock-opname.devkftd.my.id/api/new-pid-wm`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(item),
+        }
+      );
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Something went wrong");
+      set({ isLoading: false });
+      return { success: data.success, message: data.message };
+    } catch (error) {
+      set({ error: error });
+    }
+  },
+  storeByFormMmNew: async (item) => {
+    try {
+      set({ isLoading: true });
+      const token = await AsyncStorage.getItem("token");
+      const response = await fetch(
+        `https://stock-opname.devkftd.my.id/api/new-pid-mm`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(item),
+        }
+      );
+      const data = await response.json();
+      
       if (!response.ok) throw new Error(data.message || "Something went wrong");
       set({ isLoading: false });
       return { success: data.success, message: data.message };

@@ -44,30 +44,27 @@ export default function KladCreate() {
   }, []);
 
   const datamaterial = [
-    ...new Map(
-      pidMm
-        .map(i => [i.materials.id, i.materials])
-    ).values()
-  ];
+    ...new Map(pidMm.map(i => [i.materials.id, i.materials])).values()
+  ].filter(m => 
+    m.desc.toLowerCase().includes(search.toLowerCase())
+  );
   
   const databatch = [
     ...new Set(
       pidMm
-        .filter(
-          i =>
-            (!material || i.materials.id === material.id)
-        )
+        .filter(i => !material || i.materials.id === material.id)
         .map(i => i.batch)
     )
-  ];
+  ].filter(b => b && b.toLowerCase().includes(search.toLowerCase()));
+  
 
   const dataunit = [
-    ...new Set(
-      pidMm
-        .filter(i => !material || i.materials.id === material.id)
-        .flatMap(i => i.uoms)
-    )
-  ];
+  ...new Set(
+    pidMm
+      .filter(i => !material || i.materials.id === material.id)
+      .flatMap(i => i.uoms)
+  )
+].filter(u => u && u.toLowerCase().includes(search.toLowerCase()));
 
   const increment = () => setQty((prev) => String(Number(prev) + 1));
   const decrement = () => {
@@ -109,7 +106,7 @@ export default function KladCreate() {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <Stack.Screen options={{title: 'Count'}} />
+      <Stack.Screen options={{title: 'Count Existing'}} />
       <ScrollView
         contentContainerStyle={styles.container}
         style={styles.scrollViewStyle}
@@ -117,7 +114,7 @@ export default function KladCreate() {
         <View style={styles.card}>
           {/* HEADER */}
           <View style={styles.header}>
-            <Text style={styles.title}>Storage Location = {slocId}</Text>
+            <Text style={{fontWeight: 'bold'}}>Storage Location = {slocId}</Text>
             {/* <Text style={styles.subtitle}>Share your favorite reads with others</Text> */}
           </View>
 

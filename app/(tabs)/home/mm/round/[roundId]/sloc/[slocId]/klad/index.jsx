@@ -171,7 +171,7 @@ export default function index() {
                   }}
                 >
                   <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-                    Pilih Metode
+                    Choose Method
                   </Text>
                   <Pressable onPress={() => setModal(false)}>
                     <Ionicons name="close" size={24} color="black" />
@@ -198,7 +198,7 @@ export default function index() {
                       Existing
                     </Text>
                     <Text style={{ color: "gray", fontSize: 13 }}>
-                      Data sudah ada dari SAP
+                      Data based on system
                     </Text>
                   </View>
                 </Pressable>
@@ -212,14 +212,14 @@ export default function index() {
                   }}
                   onPress={() => {
                     setModal(false);
-                    router.push(`/home/mm/round/${roundId}/sloc/${slocId}/klad/create`)
+                    router.push(`/home/mm/round/${roundId}/sloc/${slocId}/klad/new-pid`)
                   }}
                 >
                   <Ionicons name="create-outline" size={22} color="#10b981" />
                   <View style={{ marginLeft: 12 }}>
-                    <Text style={{ fontWeight: "600", fontSize: 15 }}>Manual</Text>
+                    <Text style={{ fontWeight: "600", fontSize: 15 }}>New PID</Text>
                     <Text style={{ color: "gray", fontSize: 13 }}>
-                      Input data jika tidak tersedia dari SAP
+                      Exclude data from system
                     </Text>
                   </View>
                 </Pressable>

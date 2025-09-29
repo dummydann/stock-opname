@@ -21,7 +21,7 @@ import { useKladStore } from "../../../../../../../../../store/kladStore";
 
 export default function KladCreate() {
   const { roundId, stypeId } = useLocalSearchParams();
-  const { fetchPidWm, pidWm, storeByFormWm, isLoading } = useKladStore();
+  const { fetchPidWmNew, pidWm, storeByFormWmNew, isLoading } = useKladStore();
   const [storageBin, setStorageBin] = useState("");
   const [storageUnit, setStorageUnit] = useState("");
   const [material, setMaterial] = useState([]);
@@ -40,7 +40,7 @@ export default function KladCreate() {
   const navigation = useNavigation();
 
   useEffect(() => {
-    fetchPidWm(stypeId, roundId);
+    fetchPidWmNew(stypeId, roundId);
   }, []);
 
   // Storage Bin → kalau user sudah pilih material / unit / batch, filter ikut nyusut
@@ -114,7 +114,7 @@ export default function KladCreate() {
         satuan: unit,
         notes: notes,
       };
-      const result = await storeByFormWm(data);
+      const result = await storeByFormWmNew(data);
       if (result.success) {
         setSuccessModal(true); // tampilkan modal
       } else {
@@ -135,7 +135,7 @@ export default function KladCreate() {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <Stack.Screen options={{ title: "Count" }} />
+      <Stack.Screen options={{ title: "Count - New PID" }} />
       <ScrollView
         contentContainerStyle={styles.container}
         style={styles.scrollViewStyle}
@@ -143,7 +143,7 @@ export default function KladCreate() {
         <View style={styles.card}>
           {/* HEADER */}
           <View style={styles.header}>
-            <Text style={styles.title}>Storage Type = {stypeId}</Text>
+            <Text style={{fontWeight: 'bold'}}>Storage Type = {stypeId}</Text>
             {/* <Text style={styles.subtitle}>Share your favorite reads with others</Text> */}
           </View>
 

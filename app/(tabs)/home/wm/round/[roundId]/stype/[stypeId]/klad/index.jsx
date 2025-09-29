@@ -93,7 +93,7 @@ export default function index() {
           />
         </View>
       </View>
-      {/* <View
+      <View
         style={{
           flexDirection: "row",
           justifyContent: "space-around",
@@ -103,7 +103,7 @@ export default function index() {
           paddingBottom: 0,
         }}
       >
-        {["Existing", "Manual"].map((tab) => (
+        {["Existing", "New PID"].map((tab) => (
           <Pressable
             key={tab}
             onPress={() => setActiveTab(tab)}
@@ -127,7 +127,7 @@ export default function index() {
             </Text>
           </Pressable>
         ))}
-      </View> */}
+      </View>
       <FlatList
         data={filteredData}
         renderItem={({ item }) => <KladWm item={item} />}
@@ -208,7 +208,7 @@ export default function index() {
                   }}
                 >
                   <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-                    Pilih Metode
+                    Choose Method
                   </Text>
                   <Pressable onPress={() => setModal(false)}>
                     <Ionicons name="close" size={24} color="black" />
@@ -235,7 +235,7 @@ export default function index() {
                       Existing
                     </Text>
                     <Text style={{ color: "gray", fontSize: 13 }}>
-                      Data sudah ada dari SAP
+                      Data based on system
                     </Text>
                   </View>
                 </Pressable>
@@ -254,9 +254,9 @@ export default function index() {
                 >
                   <Ionicons name="create-outline" size={22} color="#10b981" />
                   <View style={{ marginLeft: 12 }}>
-                    <Text style={{ fontWeight: "600", fontSize: 15 }}>Manual</Text>
+                    <Text style={{ fontWeight: "600", fontSize: 15 }}>New PID</Text>
                     <Text style={{ color: "gray", fontSize: 13 }}>
-                      Input data jika tidak tersedia dari SAP
+                      Exclude data from system
                     </Text>
                   </View>
                 </Pressable>

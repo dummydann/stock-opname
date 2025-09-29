@@ -10,7 +10,7 @@ export default function Round() {
   const {param, type} = useLocalSearchParams();
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{title: 'Pilih Round - '+type.toUpperCase() }} />
+      <Stack.Screen options={{title: 'Choose Round - '+type.toUpperCase() }} />
       <FlatList
         data={dataRound}
         renderItem={({item}) => <RoundCard item={item} type={type} param={param}/>}
