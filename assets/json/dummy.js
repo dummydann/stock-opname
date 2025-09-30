@@ -8,11 +8,11 @@ const types = [
 ];
 
 const dataRound = [
-  { id: 1, name: "Round 1",},
-  { id: 2, name: "Round 2"},
-  { id: 3, name: "Round 3"},
-  { id: 4, name: "Round 4"},
-  { id: 5, name: "Round 5"}
+  { id: 1, name: "Round I",},
+  { id: 2, name: "Round II"},
+  { id: 3, name: "Round III"},
+  { id: 4, name: "Round IV"},
+  { id: 5, name: "Round V"}
 ];
 
 const rounds = [

@@ -16,6 +16,7 @@ import { sleep } from "../../../../../..";
 import styles2 from "../../../../../../../../../assets/styles/create.styles";
 import styles from "../../../../../../../../../assets/styles/home.styles";
 import KladWm from "../../../../../../../../../components/KladWm";
+import ReportCard from "../../../../../../../../../components/ReportCard";
 import COLORS from "../../../../../../../../../constants/colors";
 import { useKladStore } from "../../../../../../../../../store/kladStore";
 
@@ -69,7 +70,8 @@ export default function index() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ title: stypeId + ` - Round ` + roundId }} />
+      <Stack.Screen options={{ title: "WM List Count" }} />
+      <ReportCard round={roundId} stype={stypeId} />
       <View
         style={{
           backgroundColor: COLORS.background,
@@ -148,7 +150,7 @@ export default function index() {
               size={50}
               color={COLORS.textSecondary}
             />
-            <Text style={styles.emptyText}>Belum ada data</Text>
+            <Text style={styles.emptyText}>No Data Records Found</Text>
           </View>
         }
       />

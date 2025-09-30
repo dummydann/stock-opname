@@ -165,7 +165,7 @@ export default function KladCreate() {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <Stack.Screen options={{ title: "Count - Existing" }} />
+      <Stack.Screen options={{ title: "Count Product" }} />
       <ScrollView
         contentContainerStyle={styles.container}
         style={styles.scrollViewStyle}
@@ -173,7 +173,7 @@ export default function KladCreate() {
         <View style={styles.card}>
           {/* HEADER */}
           <View style={styles.header}>
-            <Text style={{fontWeight: 'bold'}}>Storage Type = {stypeId}</Text>
+            <Text style={styles.title}>Existing</Text>
             {/* <Text style={styles.subtitle}>Share your favorite reads with others</Text> */}
           </View>
 

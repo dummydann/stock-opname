@@ -1,9 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { FlatList, RefreshControl, Text, View } from 'react-native';
+import { FlatList, RefreshControl, Text, TextInput, View } from 'react-native';
 import { sleep } from '../../../..';
-import styles from '../../../../../../../assets/styles/profile.styles';
+import styles2 from '../../../../../../../assets/styles/create.styles';
+import styles from '../../../../../../../assets/styles/home.styles';
 import Loader from '../../../../../../../components/Loader';
 import StypeCard from '../../../../../../../components/StypesCard';
 import COLORS from '../../../../../../../constants/colors';
@@ -13,6 +14,11 @@ export default function Stype() {
     const { roundId } = useLocalSearchParams();
     const [refreshing, setRefreshing] = useState(false);
     const { fetchStorageType, storageType, isLoading } = useKladStore();
+    const [search, setSearch] = useState("");
+
+    const filteredData = storageType.filter(item => 
+        item.toLowerCase().includes(search.toLowerCase())
+    );
 
     useEffect(() => {
         fetchStorageType(roundId)
@@ -29,9 +35,30 @@ export default function Stype() {
 
     return (
         <View style={styles.container}>
-        <Stack.Screen options={{title: 'Storage Type - Round '+roundId }} />
+        <Stack.Screen options={{title: "List Storage Type" }} />
+        <View style={{
+            backgroundColor: COLORS.background,
+            padding: 16,
+            paddingBottom: 0
+        }}>
+            <View style={styles2.inputContainer}>
+            <Ionicons
+                name="search-outline"
+                size={20}
+                color={COLORS.textSecondary}
+                style={styles2.inputIcon}
+            />
+            <TextInput
+                style={styles2.input}
+                placeholder="Search..."
+                placeholderTextColor={COLORS.placeholderText}
+                value={search}
+                onChangeText={text => setSearch(text)}
+            />
+            </View>
+        </View>
         <FlatList
-            data={storageType}
+            data={filteredData}
             renderItem={({item}) => <StypeCard item={item} round={roundId}/>}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.booksList}
@@ -50,7 +77,7 @@ export default function Stype() {
                 size={50}
                 color={COLORS.textSecondary}
                 />
-                <Text style={styles.emptyText}>Belum ada data</Text>
+                <Text style={styles.emptyText}>No Data Records Found</Text>
             </View>
             }
         />

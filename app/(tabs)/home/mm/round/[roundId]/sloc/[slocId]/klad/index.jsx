@@ -16,6 +16,7 @@ import { sleep } from "../../../../../..";
 import styles2 from "../../../../../../../../../assets/styles/create.styles";
 import styles from "../../../../../../../../../assets/styles/home.styles";
 import KladMm from "../../../../../../../../../components/KladMm";
+import ReportCard from "../../../../../../../../../components/ReportCard";
 import COLORS from "../../../../../../../../../constants/colors";
 import { useKladStore } from "../../../../../../../../../store/kladStore";
 
@@ -25,6 +26,7 @@ export default function index() {
   const [refreshing, setRefreshing] = useState(false);
   const [ modalVisible, setModal ] = useState(false)
   const slideAnim = useRef(new Animated.Value(500)).current;
+  const [activeTab, setActiveTab] = useState("Existing");
   const router = useRouter();
   const data = {
     storage_location: slocId,
@@ -67,7 +69,8 @@ export default function index() {
   
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ title: slocId + ` - Round ` + roundId }} />
+      <Stack.Screen options={{ title: "MM List Count" }} />
+      <ReportCard round={roundId} stype={slocId} />
       <View
         style={{
           backgroundColor: COLORS.background,
@@ -91,6 +94,41 @@ export default function index() {
           />
         </View>
       </View>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-around",
+          marginBottom: 10,
+          backgroundColor: COLORS.background,
+          padding: 16,
+          paddingBottom: 0,
+        }}
+      >
+        {["Existing", "New PID"].map((tab) => (
+          <Pressable
+            key={tab}
+            onPress={() => setActiveTab(tab)}
+            style={{
+              flex: 1,
+              paddingVertical: 10,
+              marginHorizontal: 5,
+              borderRadius: 8,
+              backgroundColor:
+                activeTab === tab ? COLORS.primary : COLORS.cardBackground,
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                color: activeTab === tab ? "white" : COLORS.textSecondary,
+                fontWeight: "600",
+              }}
+            >
+              {tab}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
       <FlatList
         data={filteredData}
         renderItem={({ item }) => <KladMm item={item} />}
@@ -111,7 +149,7 @@ export default function index() {
               size={50}
               color={COLORS.textSecondary}
             />
-            <Text style={styles.emptyText}>Belum ada data</Text>
+            <Text style={styles.emptyText}>No Data Records Found</Text>
           </View>
         }
       />

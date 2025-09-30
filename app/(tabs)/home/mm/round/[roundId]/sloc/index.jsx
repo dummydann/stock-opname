@@ -1,8 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { FlatList, RefreshControl, Text, View } from 'react-native';
+import { FlatList, RefreshControl, Text, TextInput, View } from 'react-native';
 import { sleep } from '../../../..';
+import styles2 from '../../../../../../../assets/styles/create.styles';
 import styles from '../../../../../../../assets/styles/home.styles';
 import Loader from '../../../../../../../components/Loader';
 import SlocCard from '../../../../../../../components/SlocsCard';
@@ -13,6 +14,11 @@ export default function Sloc() {
     const { roundId } = useLocalSearchParams();
     const [refreshing, setRefreshing] = useState(false);
     const { fetchStorageLocation, storageLocation, isLoading } = useKladStore();
+    const [search, setSearch] = useState("");
+
+    const filteredData = storageLocation.filter(item => 
+        item.toLowerCase().includes(search.toLowerCase())
+    );
 
     useEffect(() => {
         fetchStorageLocation(roundId)
@@ -29,8 +35,8 @@ export default function Sloc() {
 
     return (
         <View style={styles.container}>
-        <Stack.Screen options={{title: 'Storage Location - Round '+roundId }} />
-        {/* <View style={{
+        <Stack.Screen options={{title: "List Storage Location" }} />
+        <View style={{
             backgroundColor: COLORS.background,
             padding: 16,
             paddingBottom: 0
@@ -46,13 +52,13 @@ export default function Sloc() {
                 style={styles2.input}
                 placeholder="Search..."
                 placeholderTextColor={COLORS.placeholderText}
-                // value={title}
-                // onChangeText={setTitle}
+                value={search}
+                onChangeText={text => setSearch(text)}
             />
             </View>
-        </View> */}
+        </View>
         <FlatList
-            data={storageLocation}
+            data={filteredData}
             renderItem={({item}) => <SlocCard item={item} round={roundId}/>}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.booksList}
@@ -71,7 +77,7 @@ export default function Sloc() {
                 size={50}
                 color={COLORS.textSecondary}
                 />
-                <Text style={styles.emptyText}>Belum ada data</Text>
+                <Text style={styles.emptyText}>No Data Records Found</Text>
             </View>
             }
         />
