@@ -9,7 +9,7 @@ export default function MaterialCard({item}) {
         <View style={styles.bookInfo}>
           <Text style={styles.bookTitle}>{item.pid.material_id} - {item.pid.material.desc_material}</Text>
           <Text style={styles.bookCaption} numberOfLines={1}>
-            PID: {item.pid.pid_number}
+            PID: {item.pid.pid_number == null ? 'New PID' : item.pid.pid_number}
           </Text>
           <Text style={styles.bookCaption} numberOfLines={1}>
             Storage Bin: {item.pid.storage_bin}

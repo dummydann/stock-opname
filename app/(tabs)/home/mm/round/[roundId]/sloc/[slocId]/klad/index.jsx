@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Animated,
   FlatList,
   Modal,
@@ -21,12 +22,13 @@ import COLORS from "../../../../../../../../../constants/colors";
 import { useKladStore } from "../../../../../../../../../store/kladStore";
 
 export default function index() {
-  const { roundId, slocId } = useLocalSearchParams();
+  const { roundId, slocId, sloc } = useLocalSearchParams();
   const { getKladMm, kladMm, isLoading } = useKladStore();
   const [refreshing, setRefreshing] = useState(false);
   const [ modalVisible, setModal ] = useState(false)
   const slideAnim = useRef(new Animated.Value(500)).current;
   const [activeTab, setActiveTab] = useState("Existing");
+  const [search, setSearch] = useState("");
   const router = useRouter();
   const data = {
     storage_location: slocId,
@@ -34,7 +36,7 @@ export default function index() {
   };
 
   useEffect(() => {
-    getKladMm(data);
+    getKladMm(data, activeTab);
     if (modalVisible) {
       // Slide up
       Animated.timing(slideAnim, {
@@ -50,15 +52,15 @@ export default function index() {
         useNativeDriver: true,
       }).start();
     }
-  }, [modalVisible]);
+  }, [modalVisible, activeTab]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
     await sleep(500);
-    await getKladMm(data);
+    await getKladMm(data, activeTab);
     setRefreshing(false);
   };
-  const [search, setSearch] = useState("");
+  
   const filteredData = kladMm.filter(item => {
     const text = search.toLowerCase();
     return (
@@ -70,7 +72,7 @@ export default function index() {
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ title: "MM List Count" }} />
-      <ReportCard round={roundId} stype={slocId} />
+      <ReportCard round={roundId} stype={sloc} />
       <View
         style={{
           backgroundColor: COLORS.background,
@@ -129,30 +131,39 @@ export default function index() {
           </Pressable>
         ))}
       </View>
-      <FlatList
-        data={filteredData}
-        renderItem={({ item }) => <KladMm item={item} />}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.booksList}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            colors={[COLORS.primary]}
-            tintColor={COLORS.primary}
-          />
-        }
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Ionicons
-              name="alert-circle-outline"
-              size={50}
-              color={COLORS.textSecondary}
+      {isLoading ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={{ marginTop: 10, color: COLORS.textSecondary }}>
+            Loading ...
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredData}
+          renderItem={({ item }) => <KladMm item={item} />}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.booksList}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              colors={[COLORS.primary]}
+              tintColor={COLORS.primary}
             />
-            <Text style={styles.emptyText}>No Data Records Found</Text>
-          </View>
-        }
-      />
+          }
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Ionicons
+                name="alert-circle-outline"
+                size={50}
+                color={COLORS.textSecondary}
+              />
+              <Text style={styles.emptyText}>No Data Records Found</Text>
+            </View>
+          }
+        />
+      )}
       <Pressable
         onPress={() =>
           // router.push(`/home/mm/round/${roundId}/sloc/${slocId}/klad/create`)

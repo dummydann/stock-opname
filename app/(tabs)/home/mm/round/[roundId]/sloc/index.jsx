@@ -15,9 +15,9 @@ export default function Sloc() {
     const [refreshing, setRefreshing] = useState(false);
     const { fetchStorageLocation, storageLocation, isLoading } = useKladStore();
     const [search, setSearch] = useState("");
-
+    
     const filteredData = storageLocation.filter(item => 
-        item.toLowerCase().includes(search.toLowerCase())
+        item.name.toLowerCase().includes(search.toLowerCase())
     );
 
     useEffect(() => {

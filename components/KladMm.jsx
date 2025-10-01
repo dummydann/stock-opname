@@ -3,13 +3,15 @@ import styles from '../assets/styles/profile.styles';
 
 
 export default function MaterialCard({item}) {
+  console.log(item);
+  
   return (
      <View style={styles.container}>
      <View style={styles.bookItem}>
       <View style={styles.bookInfo}>
         <Text style={styles.bookTitle}>{item.pid.material_id} - {item.pid.material.desc_material}</Text>
         <Text style={styles.bookCaption} numberOfLines={2}>
-          PID: {item.pid.pid_number}
+          PID: {item.pid.pid_number == null ? 'New PID' : item.pid.pid_number}
         </Text>
         <Text style={styles.bookCaption} numberOfLines={2}>
           Batch: {item.pid.batch}
@@ -22,11 +24,9 @@ export default function MaterialCard({item}) {
           <Text
             style={{
               color:
-                item.status === 0
+                item.status === 'equal'
                   ? "green"   // equal
-                  : item.status > 0
-                  ? "red"     // positif
-                  : "red",    // negatif
+                  : "red"
             }}
           >
            {item.status == 'equal' ? "Equal" : "Selisih"}

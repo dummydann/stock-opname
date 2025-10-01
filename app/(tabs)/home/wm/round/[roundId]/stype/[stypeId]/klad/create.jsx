@@ -142,7 +142,6 @@ export default function KladCreate() {
         notes: notes,
       };
       const result = await storeByFormWm(data);
-      console.log(result);
       
       if (result.success) {
         setSuccessModal(true); // tampilkan modal

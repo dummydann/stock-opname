@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Animated,
   FlatList,
   Modal,
@@ -34,7 +35,7 @@ export default function index() {
   };
 
   useEffect(() => {
-    getKladWm(data);
+    getKladWm(data, activeTab);
     if (modalVisible) {
       // Slide up
       Animated.timing(slideAnim, {
@@ -50,12 +51,12 @@ export default function index() {
         useNativeDriver: true,
       }).start();
     }
-  }, [modalVisible]);
+  }, [modalVisible, activeTab]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
     await sleep(500);
-    await getKladWm(data);
+    await getKladWm(data, activeTab);
     setRefreshing(false);
   };
 
@@ -130,30 +131,39 @@ export default function index() {
           </Pressable>
         ))}
       </View>
-      <FlatList
-        data={filteredData}
-        renderItem={({ item }) => <KladWm item={item} />}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.booksList}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            colors={[COLORS.primary]}
-            tintColor={COLORS.primary}
-          />
-        }
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Ionicons
-              name="alert-circle-outline"
-              size={50}
-              color={COLORS.textSecondary}
+      {isLoading ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={{ marginTop: 10, color: COLORS.textSecondary }}>
+            Loading ...
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredData}
+          renderItem={({ item }) => <KladWm item={item} />}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.booksList}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              colors={[COLORS.primary]}
+              tintColor={COLORS.primary}
             />
-            <Text style={styles.emptyText}>No Data Records Found</Text>
-          </View>
-        }
-      />
+          }
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Ionicons
+                name="alert-circle-outline"
+                size={50}
+                color={COLORS.textSecondary}
+              />
+              <Text style={styles.emptyText}>No Data Records Found</Text>
+            </View>
+          }
+        />
+      )}
       <Pressable
         onPress={() =>
           // router.push(`/home/wm/round/${roundId}/stype/${stypeId}/klad/create`)

@@ -242,43 +242,61 @@ export const useKladStore = create((set) => ({
       set({ error: error });
     }
   },
-  getKladWm: async (item) => {
+  getKladWm: async (item, tab) => {
     try {
+      let endpoint = "";
+      if (tab === "Existing") {
+        endpoint = "klad-wm";
+      } else if (tab === "New PID") {
+        endpoint = "new-klad-wm";
+      }
       set({ isLoading: true });
       const token = await AsyncStorage.getItem("token");
       const query = new URLSearchParams(item).toString();
       const response = await fetch(
-        `https://stock-opname.devkftd.my.id/api/klad-wm?${query}`,
+        `https://stock-opname.devkftd.my.id/api/${endpoint}?${query}`,
         {
           method: "GET",
           headers: {
+            "Content-Type": "application/json",
             Accept: "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
       );
       const data = await response.json();
+      console.log(data);
+      
       set({ kladWm: data, isLoading: false });
     } catch (error) {
       console.log(error);
     }
   },
-  getKladMm: async (item) => {
+  getKladMm: async (item, tab) => {
     try {
+      let endpoint = "";
+
+      if (tab === "Existing") {
+        endpoint = "klad-mm";
+      } else if (tab === "New PID") {
+        endpoint = "new-klad-mm";
+      }
+      set({ isLoading: true });
       const token = await AsyncStorage.getItem("token");
       const query = new URLSearchParams(item).toString();
       const response = await fetch(
-        `https://stock-opname.devkftd.my.id/api/klad-mm?${query}`,
+        `https://stock-opname.devkftd.my.id/api/${endpoint}?${query}`,
         {
           method: "GET",
           headers: {
+            "Content-Type": "application/json",
             Accept: "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
       );
       const data = await response.json();
-      set({ kladMm: data });
+      set({ kladMm: data, isLoading: false });
     } catch (error) {
       console.log(error);
     }
